@@ -105,7 +105,43 @@ public class TypingRace
             } catch (Exception e) {}
         }
 
-        // TODO (Task 2a): Print the winner's name here
+        findWinner(seat1Typist,seat2Typist,seat3Typist);
+    }
+
+    /**
+     * Finds the typist that won, then prints out a winning message, 
+     * also increasing their accuracy rating by 0.02
+     *
+     * @param theTypist the typist to advance
+     */
+    public void findWinner (Typist seat1Typist, Typist seat2Typist, Typist seat3Typist)
+    {
+        Typist winner = new Typist('0',"",0.0);     // initialise
+        double oldAccuracy = 0.0;                                                           //
+
+        if (raceFinishedBy(seat1Typist))
+        {
+            winner = seat1Typist;
+            oldAccuracy = winner.getAccuracy();
+            seat1Typist.setAccuracy(oldAccuracy + 0.02);
+        }
+        else if (raceFinishedBy(seat2Typist))
+        {
+            winner = seat2Typist;
+            oldAccuracy = winner.getAccuracy();
+            seat2Typist.setAccuracy(oldAccuracy + 0.02);
+        }
+        else if (raceFinishedBy(seat3Typist))
+        {
+            winner = seat3Typist;
+            oldAccuracy = winner.getAccuracy();
+            seat3Typist.setAccuracy(oldAccuracy + 0.02);
+        }
+
+        System.out.println();
+        System.out.println("And the winner is... " + winner.getName() + "!");
+        System.out.println("Final accuracy: " + winner.getAccuracy() + " (improved from " + oldAccuracy + ")");
+
     }
 
     /**
