@@ -65,6 +65,22 @@ public class TypingRace
             System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
         }
     }
+    
+    /**
+     * Starts the typing race.
+     * All typists are reset to the beginning, then the simulation runs
+     * turn by turn until one typist completes the full passage.
+     *
+     * Note from Ty: "I didn't bother printing the winner at the end,
+     * you can probably figure that out yourself."
+     */
+    public static void main(String[] args) {
+    TypingRace race = new TypingRace(40);
+    race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
+    race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
+    race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
+    race.startRace();
+}
 
     /**
      * Starts the typing race.
@@ -105,43 +121,32 @@ public class TypingRace
             } catch (Exception e) {}
         }
 
-        findWinner(seat1Typist,seat2Typist,seat3Typist);
+        findWinner(seat1Typist);
+        findWinner(seat2Typist);
+        findWinner(seat3Typist);
     }
 
     /**
      * Finds the typist that won, then prints out a winning message, 
      * also increasing their accuracy rating by 0.02
+     * 
+     * Screens the typist to check if a recieved argument (Typist)
+     * won. If so, prints the winner message.
      *
-     * @param theTypist the typist to advance
+     * @param theTypist the typist to check
      */
-    public void findWinner (Typist seat1Typist, Typist seat2Typist, Typist seat3Typist)
+    public void findWinner (Typist theTypist)
     {
-        Typist winner = new Typist('0',"",0.0);     // initialise
         double oldAccuracy = 0.0;                                                           //
 
-        if (raceFinishedBy(seat1Typist))
+        if (raceFinishedBy(theTypist))
         {
-            winner = seat1Typist;
-            oldAccuracy = winner.getAccuracy();
-            seat1Typist.setAccuracy(oldAccuracy + 0.02);
+            oldAccuracy = theTypist.getAccuracy();
+            theTypist.setAccuracy(oldAccuracy + 0.02);
+            System.out.println();
+            System.out.println("And the winner is... " + theTypist.getName() + "!");
+            System.out.println("Final accuracy: " + theTypist.getAccuracy() + " (improved from " + oldAccuracy + ")");
         }
-        else if (raceFinishedBy(seat2Typist))
-        {
-            winner = seat2Typist;
-            oldAccuracy = winner.getAccuracy();
-            seat2Typist.setAccuracy(oldAccuracy + 0.02);
-        }
-        else if (raceFinishedBy(seat3Typist))
-        {
-            winner = seat3Typist;
-            oldAccuracy = winner.getAccuracy();
-            seat3Typist.setAccuracy(oldAccuracy + 0.02);
-        }
-
-        System.out.println();
-        System.out.println("And the winner is... " + winner.getName() + "!");
-        System.out.println("Final accuracy: " + winner.getAccuracy() + " (improved from " + oldAccuracy + ")");
-
     }
 
     /**
@@ -278,13 +283,6 @@ public class TypingRace
                 + " (Accuracy: " + theTypist.getAccuracy() + ")");
         }
     }
-    public static void main(String[] args) {
-    TypingRace race = new TypingRace(40);
-    race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
-    race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
-    race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
-    race.startRace();
-}
 
     /**
      * Prints a character a given number of times.
