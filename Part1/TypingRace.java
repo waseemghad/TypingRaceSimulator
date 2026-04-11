@@ -67,12 +67,9 @@ public class TypingRace
     }
     
     /**
-     * Starts the typing race.
-     * All typists are reset to the beginning, then the simulation runs
-     * turn by turn until one typist completes the full passage.
-     *
-     * Note from Ty: "I didn't bother printing the winner at the end,
-     * you can probably figure that out yourself."
+     * Main method, declares the Typists. values can be changesd and
+     * more typists can be declared by calling addTypist again.
+     * 
      */
     public static void main(String[] args) {
     TypingRace race = new TypingRace(40);
@@ -87,8 +84,6 @@ public class TypingRace
      * All typists are reset to the beginning, then the simulation runs
      * turn by turn until one typist completes the full passage.
      *
-     * Note from Ty: "I didn't bother printing the winner at the end,
-     * you can probably figure that out yourself."
      */
     public void startRace()
     {
@@ -137,7 +132,7 @@ public class TypingRace
      */
     public void findWinner (Typist theTypist)
     {
-        double oldAccuracy = 0.0;                                                           //
+        double oldAccuracy = 0.0;
 
         if (raceFinishedBy(theTypist))
         {
@@ -271,16 +266,16 @@ public class TypingRace
         System.out.print(' ');
 
         // Print name and accuracy
+        System.out.print(theTypist.getName()
+            + " (Accuracy: " + theTypist.getAccuracy() + ")");
+        
         if (theTypist.isBurntOut())
         {
-            System.out.print(theTypist.getName()
-                + " (Accuracy: " + theTypist.getAccuracy() + ")"
-                + " BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
-        }
-        else
-        {
-            System.out.print(theTypist.getName()
-                + " (Accuracy: " + theTypist.getAccuracy() + ")");
+            System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
+            if (theTypist.getBurnoutTurnsRemaining() == 1)
+                System.out.print(" turn)");
+            else
+                System.out.print(" turns)");
         }
     }
 
