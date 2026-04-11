@@ -17,6 +17,8 @@ public class Typist
     private boolean burnout = false; // intialised
     private int burnoutTurnsRemaining;
     private double accuracy;
+    
+    private boolean mistype = false; // intialised
 
     // Constructor of class Typist
     /**
@@ -99,6 +101,26 @@ public class Typist
     protected String getName()
     {
         return this.name;
+    }
+    
+    /**
+     * Returns the character symbol used to represent this typist.
+     *
+     * @return the typist's symbol as a char
+     */
+    protected boolean isMistype()
+    {
+        return this.mistype;
+    }
+    
+    /**
+     * Returns the character symbol used to represent this typist.
+     *
+     * @return the typist's symbol as a char
+     */
+    protected void setMistype(boolean status)
+    {
+        mistype = status;
     }
 
     /**

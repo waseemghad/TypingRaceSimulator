@@ -237,10 +237,7 @@ public class TypingRace
      *
      * Examples:
      *   |          ⌨           | TURBOFINGERS (Accuracy: 0.85)
-     *   |    [zz]              | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
-     *
-     * Note: Ty forgot to show when a typist has just mistyped. That would
-     * be a nice improvement — perhaps a [<] marker after their symbol.
+     *   |    [~]              | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
      *
      * @param theTypist the typist whose lane to print
      */
@@ -258,6 +255,12 @@ public class TypingRace
         if (theTypist.isBurntOut())
         {
             System.out.print('~');
+            spacesAfter--; // symbol + ~ together take two characters
+        }
+
+        if (theTypist.isMistype())
+        {
+            System.out.print('<');
             spacesAfter--; // symbol + ~ together take two characters
         }
 
