@@ -5,12 +5,8 @@ import java.lang.Math;
  * A typing race simulation. Three typists race to complete a passage of text,
  * advancing character by character — or sliding backwards when they mistype.
  *
- * Originally written by Ty Posaurus, who left this project to "focus on his
- * two-finger technique". He assured us the code was "basically done".
- * We have found evidence to the contrary.
- *
- * @author TyPosaurus
- * @version 0.7 (the other 0.3 is left as an exercise for the reader)
+ * @author Waseem Ghadari
+ * @version  0.8
  */
 public class TypingRace
 {
@@ -171,6 +167,7 @@ public class TypingRace
         {
             theTypist.typeCharacter();
             theTypist.setMistype(false);
+            theTypist.resetMistypeCounter();
         }
 
         // Mistype check — the probability should reflect the typist's accuracy
@@ -178,6 +175,7 @@ public class TypingRace
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
             theTypist.setMistype(true);
+            theTypist.plusMistypeCounter();
         }
 
         // Burnout check — pushing too hard increases burnout risk
@@ -186,6 +184,7 @@ public class TypingRace
         {
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
+            theTypist.resetMistypeCounter();
         }
     }
 
@@ -280,11 +279,17 @@ public class TypingRace
         
         if (theTypist.isBurntOut())
         {
-            System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
+            System.out.print(" - - BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
             if (theTypist.getBurnoutTurnsRemaining() == 1)
                 System.out.print(" turn)");
             else
                 System.out.print(" turns)");
+        }
+        else if (theTypist.isMistype())
+        {
+            System.out.print(" ← just mistyped");
+            if (theTypist.getMistypeCounter() > 1)
+                System.out.print(" (" + theTypist.getMistypeCounter() + ")");
         }
     }
 

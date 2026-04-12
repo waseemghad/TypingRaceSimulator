@@ -19,6 +19,7 @@ public class Typist
     private double accuracy;
     
     private boolean mistype = false; // intialised
+    private int mistypeCounter;
 
     // Constructor of class Typist
     /**
@@ -104,9 +105,9 @@ public class Typist
     }
 
     /**
-     * Returns the character symbol used to represent this typist.
+     * Returns whether the typsit has mistyped this round or not.
      *
-     * @return the typist's symbol as a char
+     * @return the typist's mistype status (boolean)
      */
     protected boolean isMistype()
     {
@@ -114,13 +115,40 @@ public class Typist
     }
 
     /**
-     * Returns the character symbol used to represent this typist.
-     *
-     * @return the typist's symbol as a char
+     * Assigns a boolean status (true/false), determinines whether
+     * the typist has mistyped this round or not.
      */
     protected void setMistype(boolean status)
     {
         mistype = status;
+    }
+
+    /**
+     * Returns the number of times in a row a typist has mistyped.
+     *
+     * @return the mistype counter as a non-negative integer
+     */
+    protected int getMistypeCounter ()
+    {
+        return mistypeCounter;
+    }
+
+    /**
+     * Increments one to the mistype counter, meaning that there was
+     * a consecutive mistype
+     */
+    protected void plusMistypeCounter ()
+    {
+        mistypeCounter++;
+    }
+
+    /**
+     * Resets the mistype counter to zero, indicating no consecutive
+     * mistyps at the moment.
+     */
+    protected void resetMistypeCounter ()
+    {
+        mistypeCounter = 0;
     }
 
     /**
