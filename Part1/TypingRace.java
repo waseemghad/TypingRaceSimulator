@@ -6,7 +6,7 @@ import java.lang.Math;
  * advancing character by character — or sliding backwards when they mistype.
  *
  * @author Waseem Ghadari
- * @version  1.0
+ * @version  1.1
  */
 public class TypingRace
 {
@@ -16,7 +16,7 @@ public class TypingRace
     private Typist seat3Typist;
 
     // Accuracy thresholds for mistype and burnout events
-    private static final double MISTYPE_BASE_CHANCE = 0.25;
+    private static final double MISTYPE_BASE_CHANCE = 0.3;
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 5;
 
@@ -164,7 +164,7 @@ public class TypingRace
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.25)
-        if (Math.random() < 0.20 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < 0.25 * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
