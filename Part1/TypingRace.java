@@ -6,7 +6,7 @@ import java.lang.Math;
  * advancing character by character — or sliding backwards when they mistype.
  *
  * @author Waseem Ghadari
- * @version  0.8
+ * @version  0.9
  */
 public class TypingRace
 {
@@ -162,27 +162,24 @@ public class TypingRace
             return;
         }
 
-        // Attempt to type a character
-        if (Math.random() < theTypist.getAccuracy())
+        // Burnout check — pushing too hard increases burnout risk
+        // (probability scales with accuracy squared, capped at ~0.25)
+        if (Math.random() < 0.25 * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
-            theTypist.typeCharacter();
+            theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
             theTypist.resetMistypeCounter();
         }
-
         // Mistype check — the probability should reflect the typist's accuracy
-        if (Math.random() < theTypist.getAccuracy() * MISTYPE_BASE_CHANCE)
+        else if (Math.random() < (1-theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
             theTypist.setMistype(true);
             theTypist.plusMistypeCounter();
         }
-
-        // Burnout check — pushing too hard increases burnout risk
-        // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        else
         {
-            theTypist.burnOut(BURNOUT_DURATION);
+            theTypist.typeCharacter();
             theTypist.setMistype(false);
             theTypist.resetMistypeCounter();
         }
