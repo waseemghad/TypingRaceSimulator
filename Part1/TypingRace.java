@@ -273,17 +273,17 @@ public class TypingRace
         
         if (theTypist.isBurntOut())
         {
-            System.out.print("\u001B[34m" + " - - BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
+            System.out.print(" - - BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
             if (theTypist.getBurnoutTurnsRemaining() == 1)
-                System.out.print(" turn)" + "\u001B[0m");
+                System.out.print(" turn)");
             else
-                System.out.print(" turns)" + "\u001B[0m");
+                System.out.print(" turns)");
         }
         else if (theTypist.isMistype())
         {
-            System.out.print("\u001B[31m" + " ← just mistyped" + "\u001B[0m");
+            System.out.print(" ← just mistyped");
             if (theTypist.getMistypeCounter() > 1)
-                System.out.print("\u001B[31m" + " (" + theTypist.getMistypeCounter() + ")" + "\u001B[0m");
+                System.out.print(" (" + theTypist.getMistypeCounter() + ")");
         }
     }
 
