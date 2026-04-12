@@ -102,7 +102,7 @@ public class Typist
     {
         return this.name;
     }
-    
+
     /**
      * Returns the character symbol used to represent this typist.
      *
@@ -112,7 +112,7 @@ public class Typist
     {
         return this.mistype;
     }
-    
+
     /**
      * Returns the character symbol used to represent this typist.
      *

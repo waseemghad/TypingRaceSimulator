@@ -170,12 +170,14 @@ public class TypingRace
         if (Math.random() < theTypist.getAccuracy())
         {
             theTypist.typeCharacter();
+            theTypist.setMistype(false);
         }
 
         // Mistype check — the probability should reflect the typist's accuracy
         if (Math.random() < theTypist.getAccuracy() * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
+            theTypist.setMistype(true);
         }
 
         // Burnout check — pushing too hard increases burnout risk
@@ -183,6 +185,7 @@ public class TypingRace
         if (Math.random() < 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
             theTypist.burnOut(BURNOUT_DURATION);
+            theTypist.setMistype(false);
         }
     }
 
@@ -236,8 +239,11 @@ public class TypingRace
      * Prints a single typist's lane.
      *
      * Examples:
-     *   |          ⌨           | TURBOFINGERS (Accuracy: 0.85)
-     *   |    [~]              | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
+     *   |          ①           | TURBOFINGERS (Accuracy: 0.85)
+     *   |     ②~               | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
+     *
+     * Note: Ty forgot to show when a typist has just mistyped. That would
+     * be a nice improvement — perhaps a [<] marker after their symbol.
      *
      * @param theTypist the typist whose lane to print
      */
@@ -261,7 +267,7 @@ public class TypingRace
         if (theTypist.isMistype())
         {
             System.out.print('<');
-            spacesAfter--; // symbol + ~ together take two characters
+            spacesAfter--; // symbol + < together take two characters
         }
 
         multiplePrint(' ', spacesAfter);
