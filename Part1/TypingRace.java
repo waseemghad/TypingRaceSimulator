@@ -6,7 +6,7 @@ import java.lang.Math;
  * advancing character by character — or sliding backwards when they mistype.
  *
  * @author Waseem Ghadari
- * @version  0.9
+ * @version  1.0
  */
 public class TypingRace
 {
@@ -16,10 +16,9 @@ public class TypingRace
     private Typist seat3Typist;
 
     // Accuracy thresholds for mistype and burnout events
-    // (Ty tuned these values "by feel". They may need adjustment.)
-    private static final double MISTYPE_BASE_CHANCE = 0.3;
+    private static final double MISTYPE_BASE_CHANCE = 0.25;
     private static final int    SLIDE_BACK_AMOUNT   = 2;
-    private static final int    BURNOUT_DURATION     = 3;
+    private static final int    BURNOUT_DURATION     = 5;
 
     /**
      * Constructor for objects of class TypingRace.
@@ -67,13 +66,14 @@ public class TypingRace
      * more typists can be declared by calling addTypist again.
      * 
      */
-    public static void main(String[] args) {
-    TypingRace race = new TypingRace(40);
-    race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
-    race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
-    race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
-    race.startRace();
-}
+    public static void main(String[] args)
+    {
+        TypingRace race = new TypingRace(40);
+        race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
+        race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
+        race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
+        race.startRace();
+    }
 
     /**
      * Starts the typing race.
@@ -86,9 +86,9 @@ public class TypingRace
         boolean finished = false;
 
         // Reset all typists to the start of the passage
-        // (Ty was in a hurry here)
         seat1Typist.resetToStart();
         seat2Typist.resetToStart();
+        seat3Typist.resetToStart();
 
         while (!finished)
         {
@@ -164,7 +164,7 @@ public class TypingRace
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.25)
-        if (Math.random() < 0.25 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < 0.20 * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
@@ -238,9 +238,6 @@ public class TypingRace
      *   |          ①           | TURBOFINGERS (Accuracy: 0.85)
      *   |     ②~               | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
      *
-     * Note: Ty forgot to show when a typist has just mistyped. That would
-     * be a nice improvement — perhaps a [<] marker after their symbol.
-     *
      * @param theTypist the typist whose lane to print
      */
     private void printSeat(Typist theTypist)
@@ -276,17 +273,17 @@ public class TypingRace
         
         if (theTypist.isBurntOut())
         {
-            System.out.print(" - - BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
+            System.out.print("\u001B[34m" + " - - BURNT OUT (" + theTypist.getBurnoutTurnsRemaining());
             if (theTypist.getBurnoutTurnsRemaining() == 1)
-                System.out.print(" turn)");
+                System.out.print(" turn)" + "\u001B[0m");
             else
-                System.out.print(" turns)");
+                System.out.print(" turns)" + "\u001B[0m");
         }
         else if (theTypist.isMistype())
         {
-            System.out.print(" ← just mistyped");
+            System.out.print("\u001B[31m" + " ← just mistyped" + "\u001B[0m");
             if (theTypist.getMistypeCounter() > 1)
-                System.out.print(" (" + theTypist.getMistypeCounter() + ")");
+                System.out.print("\u001B[31m" + " (" + theTypist.getMistypeCounter() + ")" + "\u001B[0m");
         }
     }
 
