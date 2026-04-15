@@ -19,6 +19,8 @@ public class TypingRace
     private static final double MISTYPE_BASE_CHANCE = 0.3;
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 5;
+    private static final double BURNOUT_ACCURACY_DECREASE  = 0.005;
+    private static final double WINNER_ACCURACY_INCREASE  = 0.1;
 
     /**
      * Constructor for objects of class TypingRace.
@@ -133,7 +135,7 @@ public class TypingRace
         if (raceFinishedBy(theTypist))
         {
             oldAccuracy = theTypist.getAccuracy();
-            theTypist.setAccuracy(oldAccuracy + 0.02);
+            theTypist.setAccuracy(roundTo3dp(oldAccuracy + WINNER_ACCURACY_INCREASE));
             System.out.println();
             System.out.println("And the winner is... " + theTypist.getName() + "!");
             System.out.println("Final accuracy: " + theTypist.getAccuracy() + " (improved from " + oldAccuracy + ")");
@@ -169,6 +171,7 @@ public class TypingRace
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
             theTypist.resetMistypeCounter();
+            theTypist.setAccuracy(roundTo3dp(theTypist.getAccuracy() - BURNOUT_ACCURACY_DECREASE));
         }
         // Mistype check — the probability should reflect the typist's accuracy
         else if (Math.random() < (1-theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
@@ -301,5 +304,18 @@ public class TypingRace
             System.out.print(aChar);
             i = i + 1;
         }
+    }
+
+    /**
+     * Returns a double rounded to 3dp to avoid the
+     * Java number error when decrementing (e.g. 0.82999999 
+     * instead of 0.830)
+     *
+     * @param number the number to round
+     * @return a double rounded to 3 decimal places
+     */
+    private double roundTo3dp (double number)
+    {
+        return (double)Math.round(number * 1000) / 1000;
     }
 }
