@@ -6,23 +6,26 @@ Object Oriented Programming Project — ECS414U
 
 ```
 TypingRaceSimulator/
-├── Part1/    # Textual simulation (Java, command-line)
-└── Part2/    # GUI simulation (to be completed)
+├── Part1/                 # Textual simulation (Java, command-line)
+│   ├── TypingRace.java        # Public - main race logic
+│   └── Typist.java            # Package-private - typist data/behavior
+└── Part2/                 # GUI simulation (to be completed)
 ```
 
 ## Part 1 — Textual Simulation
 
 ### How to compile
 
+Note: now compiles differently, old method won't work
+
 ```bash
-cd Part1
-javac Typist.java TypingRace.java
+javac Part1/*.java
 ```
 
 ### How to run
 
 The race is started by calling `startRace()` on a `TypingRace` object.
-A simple way to change the chars, names or accuracy is to locate and edit the `main` method to `TypingRace`, for example:
+A simple way to change the icons, names or accuracy is to locate and edit the `main` method to `TypingRace`, for example:
 
 ```java
     public static void main(String[] args)                              // values below can be changed
@@ -38,14 +41,14 @@ A simple way to change the chars, names or accuracy is to locate and edit the `m
 Then run:
 
 ```bash
-java TypingRace
+java part1.TypingRace
 ```
 
 ## Dependencies
 
 - Java Development Kit (JDK) 11 or higher
-- No external libraries required for Part 1
 
 ## Notes
 
-- In Part 1, the game only supports three Typists
+- Compiling and running is now different - must be done from TypingRaceSimulator directory
+- If running in terminal, the game only supports three Typists

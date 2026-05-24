@@ -1,3 +1,5 @@
+package part1;
+
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 
@@ -6,7 +8,7 @@ import java.lang.Math;
  * advancing character by character — or sliding backwards when they mistype.
  *
  * @author Waseem Ghadari
- * @version  1.1
+ * @version  1.2
  */
 public class TypingRace
 {
@@ -64,7 +66,8 @@ public class TypingRace
     }
     
     /**
-     * Main method, declares the Typists. values can be changesd and
+     * Main method, to be used when race is run in terminal.
+     * Declares the Typists. values can be changed and
      * more typists can be declared by calling addTypist again.
      * 
      */

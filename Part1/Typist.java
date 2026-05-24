@@ -1,3 +1,5 @@
+package part1;
+
 /**
  * Write a description of class Typist here.
  *
@@ -7,9 +9,9 @@
  * It is not optional. Good luck.
  *
  * @author Waseem Hemat Ghadari
- * @version 1.1
+ * @version 1.2
  */
-public class Typist
+class Typist
 {
     private String name;
     private char symbol;
@@ -30,7 +32,7 @@ public class Typist
      * @param typistName    the name of the typist (e.g. "TURBOFINGERS")
      * @param typistAccuracy the typist's accuracy rating, between 0.0 and 1.0
      */
-    protected Typist(char typistSymbol, String typistName, double typistAccuracy)
+    Typist(char typistSymbol, String typistName, double typistAccuracy)
     {
         setSymbol(typistSymbol);
         this.name = typistName;
@@ -46,7 +48,7 @@ public class Typist
      *
      * @param turns the number of turns the burnout will last
      */
-    protected void burnOut(int turns)
+    void burnOut(int turns)
     {
         if (turns > 0)
         {
@@ -60,7 +62,7 @@ public class Typist
      * When the counter reaches zero, the typist recovers automatically.
      * Has no effect if the typist is not currently burnt out.
      */
-    protected void recoverFromBurnout()
+    void recoverFromBurnout()
     {
         if (burnout)
         {
@@ -77,7 +79,7 @@ public class Typist
      *
      * @return accuracy as a double between 0.0 and 1.0
      */
-    protected double getAccuracy()
+    double getAccuracy()
     {
         return this.accuracy;
     }
@@ -89,7 +91,7 @@ public class Typist
      *
      * @return progress as a non-negative integer
      */
-    protected int getProgress()
+    int getProgress()
     {
         return this.progress;
     }
@@ -99,7 +101,7 @@ public class Typist
      *
      * @return the typist's name as a String
      */
-    protected String getName()
+    String getName()
     {
         return this.name;
     }
@@ -109,7 +111,7 @@ public class Typist
      *
      * @return the typist's mistype status (boolean)
      */
-    protected boolean isMistype()
+    boolean isMistype()
     {
         return this.mistype;
     }
@@ -118,7 +120,7 @@ public class Typist
      * Assigns a boolean status (true/false), determinines whether
      * the typist has mistyped this round or not.
      */
-    protected void setMistype(boolean status)
+    void setMistype(boolean status)
     {
         mistype = status;
     }
@@ -128,7 +130,7 @@ public class Typist
      *
      * @return the mistype counter as a non-negative integer
      */
-    protected int getMistypeCounter ()
+    int getMistypeCounter ()
     {
         return mistypeCounter;
     }
@@ -137,7 +139,7 @@ public class Typist
      * Increments one to the mistype counter, meaning that there was
      * a consecutive mistype
      */
-    protected void plusMistypeCounter ()
+    void plusMistypeCounter ()
     {
         mistypeCounter++;
     }
@@ -146,7 +148,7 @@ public class Typist
      * Resets the mistype counter to zero, indicating no consecutive
      * mistyps at the moment.
      */
-    protected void resetMistypeCounter ()
+    void resetMistypeCounter ()
     {
         mistypeCounter = 0;
     }
@@ -156,7 +158,7 @@ public class Typist
      *
      * @return the typist's symbol as a char
      */
-    protected char getSymbol()
+    char getSymbol()
     {
         return this.symbol;
     }
@@ -167,7 +169,7 @@ public class Typist
      *
      * @return burnout turns remaining as a non-negative integer
      */
-    protected int getBurnoutTurnsRemaining()
+    int getBurnoutTurnsRemaining()
     {
         return burnoutTurnsRemaining;
     }
@@ -176,7 +178,7 @@ public class Typist
      * Resets the typist to their initial state, ready for a new race.
      * Progress returns to zero, burnout is cleared entirely.
      */
-    protected void resetToStart()
+    void resetToStart()
     {
         progress = 0;
         burnout = false;
@@ -188,7 +190,7 @@ public class Typist
      *
      * @return true if burnt out
      */
-    protected boolean isBurntOut()
+    boolean isBurntOut()
     {
         return burnout;
     }
@@ -197,7 +199,7 @@ public class Typist
      * Advances the typist forward by one character along the passage.
      * Should only be called when the typist is not burnt out.
      */
-    protected void typeCharacter()
+    void typeCharacter()
     {
         if (! burnout)
             progress++;
@@ -209,7 +211,7 @@ public class Typist
      *
      * @param amount the number of characters to slide back (must be positive)
      */
-    protected void slideBack(int amount)
+    void slideBack(int amount)
     {
         if (progress >= amount)
             progress -= amount;
@@ -223,7 +225,7 @@ public class Typist
      *
      * @param newAccuracy the new accuracy rating
      */
-    protected void setAccuracy(double newAccuracy)
+    void setAccuracy(double newAccuracy)
     {
         if (newAccuracy < 0.0)
             this.accuracy = 0.0;
@@ -238,7 +240,7 @@ public class Typist
      *
      * @param newSymbol the new symbol character
      */
-    protected void setSymbol(char newSymbol)
+    void setSymbol(char newSymbol)
     {
         this.symbol = newSymbol;
     }
