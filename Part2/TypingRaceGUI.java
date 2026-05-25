@@ -16,39 +16,54 @@ import java.awt.event.ActionListener;
 public class TypingRaceGUI extends JFrame
 {
     TypingRace typeRace = new TypingRace(40);
+    CardLayout cardLayout = new CardLayout();
+    GameSpecs currentGameSpecs;
 
     public TypingRaceGUI (String title) {
         super(title);
+        frameSetup();
+        buildAllCards();
+        setVisible(true);
     }
+    
     public static void main (String[] args) {
-        TypingRaceGUI gui = new TypingRaceGUI("Typing Race");
-        gui.startScreen();
-        return;
+        new TypingRaceGUI("Typing Race");
     }
 
     // Sets up the window frame for the game
     //
     public void frameSetup () {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridBagLayout());
+        getContentPane().setLayout(cardLayout);
         setSize(1000,800);
     }
 
-    // public void clearFrame () {
-    // }
+    // Builds all cards upfront to avoid duplicates
+    //
+    private void buildAllCards() {
+        buildWelcomeCard();
+        buildChoosePassageCard();
+    }
+
+    // Helper method to show a specific screen
+    //
+    private void showScreen(String screenName) {
+        cardLayout.show(getContentPane(), screenName);
+    }
 
     // Opens the starting screen
     //
-    public void startScreen () {
-        frameSetup();
-
+    private void buildWelcomeCard () {
         // Panel to contain all contents (stacks them vertically)
         JPanel welcomePanel = new JPanel();
         welcomePanel.setLayout(new BoxLayout(welcomePanel, BoxLayout.Y_AXIS));
 
         JLabel title = new JLabel("Welcome to the TypingRace Simulator");
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
         JButton startButton = new JButton("Start");
+        startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        welcomePanel.add(Box.createVerticalGlue()); // Push content down from top
         welcomePanel.add(title);
         
         welcomePanel.add(Box.createVerticalStrut(20)); // Space between title and button
@@ -56,17 +71,25 @@ public class TypingRaceGUI extends JFrame
         // Horizontally centre the button by wrapping it in a panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(startButton);
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomePanel.add(buttonPanel);
+        welcomePanel.add(Box.createVerticalGlue()); // Push content up from bottom
 
-        add(welcomePanel);
-        setVisible(true);
+        getContentPane().add(welcomePanel, "welcome");
 
-        startButton.addActionListener(e -> choosePassage());
+        startButton.addActionListener(e -> 
+            showScreen("choose passage")
+        );
     }
 
-    public void choosePassage () {
+    // Lets you choose your passage length
+    //
+    private void buildChoosePassageCard () {
 
-        JPanel allPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel choosePsgPanel = new JPanel();
+        choosePsgPanel.setLayout(new BoxLayout(choosePsgPanel, BoxLayout.Y_AXIS));
+
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         JPanel shortPanel = new JPanel();
         shortPanel.setLayout(new BoxLayout(shortPanel, BoxLayout.Y_AXIS));
@@ -93,17 +116,62 @@ public class TypingRaceGUI extends JFrame
         longPanel.add(new JLabel("80 characters"));
         customPanel.add(new JLabel("Choose the number of characters"));
 
+        JButton[] buttonArr = new JButton[panArr.length];
+
         for (int i=0;i<panArr.length;i++) {
+            buttonArr[i] = new JButton("Select");
             panArr[i].add(Box.createVerticalStrut(20));
-            panArr[i].add(new JButton("Select"));
+            panArr[i].add(buttonArr[i]);
         }
 
         for (int i=0;i<panArr.length;i++) {
-            allPanel.add(panArr[i]);
+            optionsPanel.add(panArr[i]);
         }
 
-        // CALL TO METHOD TO CLEAR THE FRAME
+        choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill top
+        optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        choosePsgPanel.add(optionsPanel);
+        choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
-        add(allPanel);
+        getContentPane().add(choosePsgPanel, "choose passage");
+
+        buttonArr[0].addActionListener(e -> {
+            currentGameSpecs = new GameSpecs("short");
+        });
+        buttonArr[1].addActionListener(e -> {
+            currentGameSpecs = new GameSpecs("medium");
+        });
+        buttonArr[2].addActionListener(e -> {
+            currentGameSpecs = new GameSpecs("long");
+        });
+        buttonArr[3].addActionListener(e -> {
+            currentGameSpecs = new GameSpecs("custom");
+            boolean valid = false;
+            String input = null;
+            while (! valid) {
+                input = JOptionPane.showInputDialog(this, "Enter passage length here");
+                if (input == null)
+                     break;  // user clicks Cancel
+                
+                try {
+                    int customLength = Integer.parseInt(input);
+                    if (customLength >= 10 && customLength <= 200) {
+                        currentGameSpecs.setPassageLength(customLength);
+                        valid = true;
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(this, "Enter a number from 10 to 200")
+                    }
+                }
+                catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid number (integer)");
+                }
+            }
+        });
+
+        // Takes to next page
+        for (int i=0;i<buttonArr.length;i++) {
+            buttonArr[i].addActionListener(e -> showScreen("choose number of typists"););
+        }
     }
 }
