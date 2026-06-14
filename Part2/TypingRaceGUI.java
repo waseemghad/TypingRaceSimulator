@@ -25,7 +25,7 @@ public class TypingRaceGUI extends JFrame
         buildAllCards();
         setVisible(true);
     }
-    
+
     public static void main (String[] args) {
         new TypingRaceGUI("Typing Race");
     }
@@ -43,6 +43,7 @@ public class TypingRaceGUI extends JFrame
     private void buildAllCards() {
         buildWelcomeCard();
         buildChoosePassageCard();
+        buildChooseNumTypists();
     }
 
     // Helper method to show a specific screen
@@ -92,40 +93,67 @@ public class TypingRaceGUI extends JFrame
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         JPanel shortPanel = new JPanel();
-        shortPanel.setLayout(new BoxLayout(shortPanel, BoxLayout.Y_AXIS));
+        shortPanel.setLayout(new BoxLayout(shortPanel, BoxLayout.Y_AXIS));      // 'empty borders' for inside border (padding)
+        shortPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         JPanel mediumPanel = new JPanel();
         mediumPanel.setLayout(new BoxLayout(mediumPanel, BoxLayout.Y_AXIS));
+        mediumPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         JPanel longPanel = new JPanel();
         longPanel.setLayout(new BoxLayout(longPanel, BoxLayout.Y_AXIS));
+        longPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         JPanel customPanel = new JPanel();
         customPanel.setLayout(new BoxLayout(customPanel, BoxLayout.Y_AXIS));
+        customPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
         JPanel[] panArr = {shortPanel,mediumPanel,longPanel,customPanel};
 
-        shortPanel.add(new JLabel("Short"));
-        mediumPanel.add(new JLabel("Medium"));
-        longPanel.add(new JLabel("Long"));
-        customPanel.add(new JLabel("Custom"));
+        JLabel shortLabel = new JLabel("Short");
+        shortLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel mediumLabel = new JLabel("Medium");
+        mediumLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel longLabel = new JLabel("Long");
+        longLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel customLabel = new JLabel("Custom");
+        customLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        shortPanel.add(shortLabel);
+        mediumPanel.add(mediumLabel);
+        longPanel.add(longLabel);
+        customPanel.add(customLabel);
 
         for (int i=0;i<panArr.length;i++) {
             panArr[i].add(Box.createVerticalStrut(20));
         }
 
-        shortPanel.add(new JLabel("20 characters"));
-        mediumPanel.add(new JLabel("40 characters"));
-        longPanel.add(new JLabel("80 characters"));
-        customPanel.add(new JLabel("Choose the number of characters"));
+        // desc being description
+        JLabel shortDescLabel = new JLabel("20 characters");
+        shortDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel mediumDescLabel = new JLabel("40 characters");
+        mediumDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel longDescLabel = new JLabel("80 characters");
+        longDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel customDescLabel = new JLabel("Choose the number of characters");
+        customDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        shortPanel.add(shortDescLabel);
+        mediumPanel.add(mediumDescLabel);
+        longPanel.add(longDescLabel);
+        customPanel.add(customDescLabel);
 
         JButton[] buttonArr = new JButton[panArr.length];
 
         for (int i=0;i<panArr.length;i++) {
             buttonArr[i] = new JButton("Select");
+            buttonArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             panArr[i].add(Box.createVerticalStrut(20));
             panArr[i].add(buttonArr[i]);
         }
 
         for (int i=0;i<panArr.length;i++) {
             optionsPanel.add(panArr[i]);
+            if (i < panArr.length - 1) {
+                optionsPanel.add(Box.createHorizontalStrut(20));
+            }
         }
 
         choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill top
@@ -148,30 +176,89 @@ public class TypingRaceGUI extends JFrame
             currentGameSpecs = new GameSpecs("custom");
             boolean valid = false;
             String input = null;
+            int customLength = 0;
             while (! valid) {
-                input = JOptionPane.showInputDialog(this, "Enter passage length here");
+                input = JOptionPane.showInputDialog(this, "Enter passage length here (10 - 200)");
                 if (input == null)
                      break;  // user clicks Cancel
                 
                 try {
-                    int customLength = Integer.parseInt(input);
+                    customLength = Integer.parseInt(input);
                     if (customLength >= 10 && customLength <= 200) {
                         currentGameSpecs.setPassageLength(customLength);
                         valid = true;
                     }
                     else {
-                        JOptionPane.showMessageDialog(this, "Enter a number from 10 to 200")
+                        JOptionPane.showMessageDialog(this, "Enter a number from 10 to 200");
                     }
                 }
                 catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Please enter a valid number (integer)");
                 }
             }
+            if (customLength != 0)  // 0 being null operator
+                showScreen("choose number of typists");
         });
 
         // Takes to next page
-        for (int i=0;i<buttonArr.length;i++) {
-            buttonArr[i].addActionListener(e -> showScreen("choose number of typists"););
+        for (int i=0;i<buttonArr.length - 1;i++) { 
+            buttonArr[i].addActionListener(e -> {
+                showScreen("choose number of typists");
+            });
         }
+    }
+
+    // User chooses number of typists (players)
+    //
+    private void buildChooseNumTypists () {
+
+        JPanel chooseNumTypistsPanel = new JPanel();
+        chooseNumTypistsPanel.setLayout(new BoxLayout(chooseNumTypistsPanel, BoxLayout.Y_AXIS));
+
+        JLabel askHowMany = new JLabel("How many typists are playing? (maximum 6)");
+        askHowMany.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JTextField inputField = new JTextField(2);
+        inputField.setMaximumSize(new Dimension(200, inputField.getPreferredSize().height));
+        inputField.setAlignmentX(Component.CENTER_ALIGNMENT);
+            // constrains the inputField height to its preferred size,
+            // so it doesn't fill up the screen because of BoxLayout.Y_AXIS
+
+        JButton submitBtn = new JButton("Submit");
+        submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel errorLabel = new JLabel("");
+        errorLabel.setForeground(Color.RED);
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        chooseNumTypistsPanel.add(Box.createVerticalGlue());
+        chooseNumTypistsPanel.add(askHowMany);
+        chooseNumTypistsPanel.add(Box.createVerticalStrut(20));
+        chooseNumTypistsPanel.add(inputField);
+        chooseNumTypistsPanel.add(Box.createVerticalStrut(20));
+        chooseNumTypistsPanel.add(submitBtn);
+        chooseNumTypistsPanel.add(Box.createVerticalStrut(20));
+        chooseNumTypistsPanel.add(errorLabel);
+        chooseNumTypistsPanel.add(Box.createVerticalGlue());
+
+        submitBtn.addActionListener(e -> {
+            try {
+                int numTypists = Integer.parseInt(inputField.getText());
+                if (numTypists < 2 || numTypists > 6) {
+                    errorLabel.setText("Please enter a valid number from 2 to 6");
+                }
+                else {  // successful input
+                    errorLabel.setText("");
+                    currentGameSpecs.setSeatCount(numTypists);
+
+                    // showScreen("choose difficulty mods"); ~~[to be added]
+                }
+            }
+            catch (NumberFormatException ex) {  
+                errorLabel.setText("Please enter a valid integer from 2 to 6");
+            }
+        });
+
+        getContentPane().add(chooseNumTypistsPanel, "choose number of typists");
     }
 }
