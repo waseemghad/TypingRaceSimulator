@@ -9,6 +9,9 @@ package part2;
 public class GameSpecs {
     private int passageLength;
     private int seatCount;
+    private boolean Autocorrect;
+    private boolean caffieneMode;
+    private boolean nightShift;
     
     public GameSpecs(String passageLengthString) {
         this.passageLength = allocatePassageLength(passageLengthString);
@@ -41,5 +44,29 @@ public class GameSpecs {
     
     public void setSeatCount(int seatCount) {
         this.seatCount = seatCount;
+    }
+    
+    public boolean isAutocorrect() {
+        return Autocorrect;
+    }
+    
+    public void setAutocorrect(boolean autocorrect) {
+        this.Autocorrect = autocorrect;
+    }
+    
+    public boolean isCaffieneMode() {
+        return caffieneMode;
+    }
+    
+    public void setCaffieneMode(boolean caffieneMode) {
+        this.caffieneMode = caffieneMode;
+    }
+    
+    public boolean isNightShift() {
+        return nightShift;
+    }
+    
+    public void setNightShift(boolean nightShift) {
+        this.nightShift = nightShift;
     }
 }

@@ -27,6 +27,11 @@ public class TypingRaceGUI extends JFrame
     }
 
     public static void main (String[] args) {
+        // try {
+        //     UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
         new TypingRaceGUI("Typing Race");
     }
 
@@ -44,6 +49,7 @@ public class TypingRaceGUI extends JFrame
         buildWelcomeCard();
         buildChoosePassageCard();
         buildChooseNumTypists();
+        buildChooseMods();
     }
 
     // Helper method to show a specific screen
@@ -251,7 +257,7 @@ public class TypingRaceGUI extends JFrame
                     errorLabel.setText("");
                     currentGameSpecs.setSeatCount(numTypists);
 
-                    // showScreen("choose difficulty mods"); ~~[to be added]
+                    showScreen("choose mods");
                 }
             }
             catch (NumberFormatException ex) {  
@@ -260,5 +266,159 @@ public class TypingRaceGUI extends JFrame
         });
 
         getContentPane().add(chooseNumTypistsPanel, "choose number of typists");
+    }
+
+    private void buildChooseMods () {
+
+        JPanel chooseModsPanel = new JPanel();
+        chooseModsPanel.setLayout(new BoxLayout(chooseModsPanel, BoxLayout.Y_AXIS));
+
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel autocorrectPanel = new JPanel();
+        autocorrectPanel.setLayout(new BoxLayout(autocorrectPanel, BoxLayout.Y_AXIS));      // 'empty borders' for inside border (padding)
+        autocorrectPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        JPanel caffieneModePanel = new JPanel();
+        caffieneModePanel.setLayout(new BoxLayout(caffieneModePanel, BoxLayout.Y_AXIS));
+        caffieneModePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        JPanel nightShiftPanel = new JPanel();
+        nightShiftPanel.setLayout(new BoxLayout(nightShiftPanel, BoxLayout.Y_AXIS));
+        nightShiftPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
+        JPanel[] panArr = {autocorrectPanel,caffieneModePanel,nightShiftPanel};
+
+        JLabel aCorrLabel = new JLabel("Autocorrect");
+        aCorrLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel cModeLabel = new JLabel("Caffiene Mode");
+        cModeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel nShiftLabel = new JLabel("Night Shift");
+        nShiftLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        autocorrectPanel.add(aCorrLabel);
+        caffieneModePanel.add(cModeLabel);
+        nightShiftPanel.add(nShiftLabel);
+
+        for (int i=0;i<panArr.length;i++) {
+            panArr[i].add(Box.createVerticalStrut(20));
+        }
+
+        // desc being description
+        JTextArea aCorrDesc = new JTextArea("-50% Mistype Slideback\n" +
+            "\n" +
+            "When enabled, the slideBack amount is halved, simulating modern phone keyboards.");
+        aCorrDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        aCorrDesc.setEditable(false);
+        aCorrDesc.setLineWrap(true);
+        aCorrDesc.setWrapStyleWord(true);   // avoids words splitting whern wrapping text
+        aCorrDesc.setPreferredSize(new Dimension(200,200));
+        JTextArea cModeDesc = new JTextArea("For first 10 turns\n" +
+            "+100% Speed Boost\n" +
+            "+50% Burnout Chance \n" +
+            "\n" +
+            "All typists gain a temporary speed boost for the first 10 turns, followed by increased burnout risk.");
+        cModeDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cModeDesc.setEditable(false);
+        cModeDesc.setLineWrap(true);
+        cModeDesc.setWrapStyleWord(true);
+        cModeDesc.setPreferredSize(new Dimension(200,200));
+        JTextArea nShiftDesc = new JTextArea("-33% Typing Accuracy\n" +
+            "\n" +
+            "Accuracy ratings are slightly reduced across the board: everyone is tired.");
+        nShiftDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nShiftDesc.setEditable(false);
+        nShiftDesc.setLineWrap(true);
+        nShiftDesc.setWrapStyleWord(true);
+        nShiftDesc.setPreferredSize(new Dimension(200,200));
+
+        autocorrectPanel.add(aCorrDesc);
+        caffieneModePanel.add(cModeDesc);
+        nightShiftPanel.add(nShiftDesc);
+
+        JButton[] buttonArr = new JButton[panArr.length];
+
+        for (int i=0;i<panArr.length;i++) {
+            buttonArr[i] = new JButton("Select");
+            buttonArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            panArr[i].add(Box.createVerticalStrut(20));
+            panArr[i].add(buttonArr[i]);
+        }
+
+        // horizontal spacing of panels
+        for (int i=0;i<panArr.length;i++) {
+            optionsPanel.add(panArr[i]);
+            if (i < panArr.length - 1) {
+                optionsPanel.add(Box.createHorizontalStrut(20));
+            }
+        }
+
+        JPanel continuePanel = new JPanel();
+        JButton continueButton = new JButton("Continue");
+
+        continuePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continuePanel.add(continueButton);
+
+        // vertical centre positioning
+        chooseModsPanel.add(Box.createVerticalGlue());   // expands to fill top
+        optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chooseModsPanel.add(optionsPanel);
+        chooseModsPanel.add(Box.createVerticalStrut(10));
+        chooseModsPanel.add(continuePanel);
+        chooseModsPanel.add(Box.createVerticalGlue());   // expands to fill bottom
+
+        buttonArr[0].addActionListener(e -> {
+            buttonArr[0].setOpaque(true);
+
+            if (currentGameSpecs.isAutocorrect()) {
+                currentGameSpecs.setAutocorrect(false);
+                buttonArr[0].setBackground(UIManager.getColor("Button.background"));    // default colour
+                buttonArr[0].setForeground(Color.BLACK);
+                buttonArr[0].setText("Select");
+            }
+            else {
+                currentGameSpecs.setAutocorrect(true);
+                buttonArr[0].setBackground(Color.BLUE);
+                buttonArr[0].setForeground(Color.BLUE);
+                buttonArr[0].setText("Deselect");
+            }
+        });
+        buttonArr[1].addActionListener(e -> {
+            buttonArr[1].setOpaque(true);
+
+            if (currentGameSpecs.isCaffieneMode()) {
+                currentGameSpecs.setCaffieneMode(false);
+                buttonArr[1].setBackground(UIManager.getColor("Button.background"));    // default colour
+                buttonArr[1].setForeground(Color.BLACK);
+                buttonArr[1].setText("Select");
+            }
+            else {
+                currentGameSpecs.setCaffieneMode(true);
+                buttonArr[1].setBackground(Color.BLUE);
+                buttonArr[1].setForeground(Color.BLUE);
+                buttonArr[1].setText("Deselect");
+            }
+        });
+        buttonArr[2].addActionListener(e -> {
+            buttonArr[2].setOpaque(true);
+
+            if (currentGameSpecs.isNightShift()) {
+                currentGameSpecs.setNightShift(false);
+                buttonArr[2].setBackground(UIManager.getColor("Button.background"));    // default colour
+                buttonArr[2].setForeground(Color.BLACK);
+                buttonArr[2].setText("Select");
+                
+            }
+            else {
+                currentGameSpecs.setNightShift(true);
+                buttonArr[2].setBackground(Color.BLUE);
+                buttonArr[2].setForeground(Color.BLUE);
+                buttonArr[2].setText("Deselect");
+            }
+        });
+
+        // Takes to next page, to be added
+        // continueButton.addActionListener(e -> showScreen("choose your typists"));
+
+        getContentPane().add(chooseModsPanel, "choose mods");
     }
 }
