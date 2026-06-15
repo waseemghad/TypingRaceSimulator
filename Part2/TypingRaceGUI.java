@@ -27,11 +27,6 @@ public class TypingRaceGUI extends JFrame
     }
 
     public static void main (String[] args) {
-        // try {
-        //     UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
         new TypingRaceGUI("Typing Race");
     }
 
@@ -40,7 +35,7 @@ public class TypingRaceGUI extends JFrame
     public void frameSetup () {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(cardLayout);
-        setSize(1000,800);
+        setSize(1400,800);
     }
 
     // Builds all cards upfront to avoid duplicates
@@ -50,7 +45,18 @@ public class TypingRaceGUI extends JFrame
         buildChoosePassageCard();
         buildChooseNumTypists();
         buildChooseMods();
+        buildChooseTypistPresets();
     }
+
+    /**************************************
+     * Card names:
+     *      welcome
+     *      choose passage
+     *      choose number of typists
+     *      choose mods
+     *      choose typist presets
+     * 
+    **************************************/
 
     // Helper method to show a specific screen
     //
@@ -303,7 +309,8 @@ public class TypingRaceGUI extends JFrame
         }
 
         // desc being description
-        JTextArea aCorrDesc = new JTextArea("-50% Mistype Slideback\n" +
+        JTextArea aCorrDesc = new JTextArea("* 25% chance of triggering\n" +
+            "• -50% Mistype Slideback\n" +
             "\n" +
             "When enabled, the slideBack amount is halved, simulating modern phone keyboards.");
         aCorrDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -311,9 +318,9 @@ public class TypingRaceGUI extends JFrame
         aCorrDesc.setLineWrap(true);
         aCorrDesc.setWrapStyleWord(true);   // avoids words splitting whern wrapping text
         aCorrDesc.setPreferredSize(new Dimension(200,200));
-        JTextArea cModeDesc = new JTextArea("For first 10 turns\n" +
-            "+100% Speed Boost\n" +
-            "+50% Burnout Chance \n" +
+        JTextArea cModeDesc = new JTextArea("* For first 10 turns\n" +
+            "• +100% Speed Boost\n" +
+            "• +20% Burnout Chance \n" +
             "\n" +
             "All typists gain a temporary speed boost for the first 10 turns, followed by increased burnout risk.");
         cModeDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -321,7 +328,7 @@ public class TypingRaceGUI extends JFrame
         cModeDesc.setLineWrap(true);
         cModeDesc.setWrapStyleWord(true);
         cModeDesc.setPreferredSize(new Dimension(200,200));
-        JTextArea nShiftDesc = new JTextArea("-33% Typing Accuracy\n" +
+        JTextArea nShiftDesc = new JTextArea("• -33% Typing Accuracy\n" +
             "\n" +
             "Accuracy ratings are slightly reduced across the board: everyone is tired.");
         nShiftDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -417,8 +424,119 @@ public class TypingRaceGUI extends JFrame
         });
 
         // Takes to next page, to be added
-        // continueButton.addActionListener(e -> showScreen("choose your typists"));
+        continueButton.addActionListener(e -> showScreen("choose typist presets"));
 
         getContentPane().add(chooseModsPanel, "choose mods");
+    }
+
+    private void buildChooseTypistPresets () {
+
+        JPanel chooseTPresetPanel = new JPanel();
+        chooseTPresetPanel.setLayout(new BoxLayout(chooseTPresetPanel, BoxLayout.Y_AXIS));
+
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel[] panArr = new JPanel[5];
+        for (int i = 0; i < panArr.length; i++) {
+            panArr[i] = new JPanel();
+            panArr[i].setLayout(new BoxLayout(panArr[i], BoxLayout.Y_AXIS));
+            panArr[i].setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK), 
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+        }
+
+        String[] labelNames = {"Flash Hands", "Deadeye Typist", "Hammer Hands", "Flow State", "Two-finger Tryhard"};
+        JLabel[] labelArr = new JLabel[labelNames.length];
+
+        for (int i = 0; i < labelNames.length; i++) {
+            labelArr[i] = new JLabel(labelNames[i]);
+            labelArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            panArr[i].add(labelArr[i]);
+        }
+
+        for (int i=0;i<panArr.length;i++) {
+            panArr[i].add(Box.createVerticalStrut(20));
+        }
+
+        String[] descriptions = {
+            "• 70% Typing accuracy\n• ~15% Burnout chance\n\nThis nimble typer is quick to flicker his hands like a flash! However those hands can burn bright and burn out fast..",
+            "• 90% Typing accuracy\n• ~24% Burnout chance\n\nUsing laser-like levels of focus and precision, this typist locks onto an unsuspecting key like a target in their sight, almost never missing. The mind, however, can only hold that edge for so long..",
+            "• 30% Typing accuracy\n• ~2.5% Burnout chance\n\nNot the sharpest typist, but an absolute workhorse - fatigue never gets to this reliable beast!",
+            "• 60% Typing accuracy\n• ~11% Burnout chance\n\nWhen this typist hits their stride, their fingers effortlessly flow across the keyboard like water - fluid and fast, though sometimes too loose to stay precise..",
+            "• 40% Typing accuracy\n• ~5% Burnout chance\n\nKeyboards may be unfamiliar territory, but what this typist lacks in experience, they make up for with iron will and unstoppable determination.",
+        };
+        JTextArea[] descArr = new JTextArea[descriptions.length];
+
+        for (int i = 0; i < descriptions.length; i++) {
+            descArr[i] = new JTextArea(descriptions[i]);
+            descArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            descArr[i].setEditable(false);
+            descArr[i].setLineWrap(true);
+            descArr[i].setWrapStyleWord(true);
+            descArr[i].setPreferredSize(new Dimension(200, 200));
+            panArr[i].add(descArr[i]);
+        }
+
+        JButton[] buttonArr = new JButton[panArr.length];
+
+        for (int i=0;i<panArr.length;i++) {
+            buttonArr[i] = new JButton("Select");
+            buttonArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            panArr[i].add(Box.createVerticalStrut(20));
+            panArr[i].add(buttonArr[i]);
+        }
+
+        // horizontal spacing of panels
+        for (int i=0;i<panArr.length;i++) {
+            optionsPanel.add(panArr[i]);
+            if (i < panArr.length - 1) {
+                optionsPanel.add(Box.createHorizontalStrut(20));
+            }
+        }
+
+        JPanel continuePanel = new JPanel();
+        JButton continueButton = new JButton("Continue");
+
+        continuePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continuePanel.add(continueButton);
+
+        // vertical centre positioning
+        chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill top
+        optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chooseTPresetPanel.add(optionsPanel);
+        chooseTPresetPanel.add(Box.createVerticalStrut(10));
+        chooseTPresetPanel.add(continuePanel);
+        chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill bottom
+
+        /*
+        for (int i=0;i<buttonArr.length;i++) {
+            buttonArr[i].addActionListener(e -> {
+                currentGameSpecs.setChosenCharacter(/ADD SEAT INDEX HERE,i);
+            });
+        }*/
+
+        // shared event listener - for colour change
+        for (JButton button : buttonArr) {
+            button.setOpaque(true);
+
+            button.addActionListener(e -> {
+                button.setBackground(Color.BLUE);
+                button.setForeground(Color.BLUE);
+                button.setText("Selected");
+                for (JButton x : buttonArr) {
+                    if (x.equals(button)) continue;
+                    x.setBackground(UIManager.getColor("Button.background"));
+                    x.setForeground(Color.BLACK);
+                    x.setText("Select");
+                }
+            });
+        }
+
+        // Takes to next page, to be added
+        // continueButton.addActionListener(e -> showScreen("choose keyboard presets"));
+
+        getContentPane().add(chooseTPresetPanel, "choose typist presets");
     }
 }

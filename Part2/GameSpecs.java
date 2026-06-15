@@ -12,6 +12,7 @@ public class GameSpecs {
     private boolean Autocorrect;
     private boolean caffieneMode;
     private boolean nightShift;
+    private int[] chosenCharacter;
     
     public GameSpecs(String passageLengthString) {
         this.passageLength = allocatePassageLength(passageLengthString);
@@ -42,8 +43,15 @@ public class GameSpecs {
         return seatCount;
     }
     
+    /**
+     * Sets the seat count and declares array of characters
+     * correspoonding to the seat count
+     * 
+     * @param seatCount the number of typists playing
+     */
     public void setSeatCount(int seatCount) {
         this.seatCount = seatCount;
+        chosenCharacter = new int[seatCount];
     }
     
     public boolean isAutocorrect() {
@@ -68,5 +76,27 @@ public class GameSpecs {
     
     public void setNightShift(boolean nightShift) {
         this.nightShift = nightShift;
+    }
+
+    /**
+     * Sets value for a specific seat's character preset
+     * The value of characters range from 0 to 4,
+     * with -1 being value for no character
+     * 
+     * @param seatIndex the seat/typist index
+     * @param characterPreset the value of the chosen character preset
+     */
+    public void setChosenCharacter(int seatIndex, int characterPreset) {
+        this.chosenCharacter[seatIndex] = characterPreset;
+    }
+    
+    /**
+     * Returns the chosen character preset for a specific seat
+     * 
+     * @param seatIndex the seat/typist index
+     * @return the character preset for that seat
+     */
+    public int getChosenCharacter(int seatIndex) {
+        return chosenCharacter[seatIndex];
     }
 }

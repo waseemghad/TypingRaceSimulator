@@ -19,7 +19,7 @@ TypingRaceSimulator/
 Note: now compiles differently, old method won't work
 
 ```bash
-javac Part1/*.java
+javac Part1/*.java Part2/*.java
 ```
 
 ### How to run
@@ -41,7 +41,7 @@ A simple way to change the icons, names or accuracy is to locate and edit the `m
 Then run:
 
 ```bash
-java part1.TypingRace
+java part2.TypingRaceGUI
 ```
 
 ## Dependencies
