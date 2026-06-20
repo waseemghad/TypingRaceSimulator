@@ -21,6 +21,7 @@ public class TypingRace
     private static final double MISTYPE_BASE_CHANCE = 0.3;
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 5;
+    private static final double BURNOUT_BASE_CHANCE = 0.3;
     private static final double BURNOUT_ACCURACY_DECREASE  = 0.005;
     private static final double WINNER_ACCURACY_INCREASE  = 0.1;
 
@@ -168,8 +169,7 @@ public class TypingRace
         }
 
         // Burnout check — pushing too hard increases burnout risk
-        // (probability scales with accuracy squared, capped at ~0.25)
-        if (Math.random() < 0.25 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (determineBurnout(theTypist))
         {
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setMistype(false);
@@ -177,7 +177,7 @@ public class TypingRace
             theTypist.setAccuracy(roundTo3dp(theTypist.getAccuracy() - BURNOUT_ACCURACY_DECREASE));
         }
         // Mistype check — the probability should reflect the typist's accuracy
-        else if (Math.random() < (1-theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+        else if (determineMistype(theTypist))
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
             theTypist.setMistype(true);
@@ -189,6 +189,47 @@ public class TypingRace
             theTypist.setMistype(false);
             theTypist.resetMistypeCounter();
         }
+    }
+
+    /**
+     * Calculates and determines whether typist is burnt out
+     * by chance (per round) and returns the boolean value
+     * 
+     * Probability scales with accuracy squared, capped at ~0.25
+     * Higher accuracy means higher burnout chance
+     * Never greater than BURNOUT_BASE_CHANCE
+     * 
+     * @param theTypist
+     * @return true if typist is burnt out
+     */
+    private boolean determineBurnout(Typist theTypist)
+    {
+        boolean burnoutResult;
+        if (Math.random() < BURNOUT_BASE_CHANCE * theTypist.getAccuracy() * theTypist.getAccuracy())
+            burnoutResult = true;
+        else
+            burnoutResult = false;
+        return burnoutResult;
+    }
+
+    /**
+     * Calculates and determines whether typist has mistyped
+     * by chance (per round) and returns the boolean value
+     * 
+     * Never greater than MISTYPE_BASE_CHANCE, is smaller with
+     * higher typist accuracy
+     * 
+     * @param theTypist
+     * @return true if typist has mistyped
+     */
+    private boolean determineMistype(Typist theTypist)
+    {
+        boolean mistypeResult;
+        if (Math.random() < (1-theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+            mistypeResult = true;
+        else
+            mistypeResult = false;
+        return mistypeResult;
     }
 
     /**
