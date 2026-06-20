@@ -18,6 +18,7 @@ public class TypingRaceGUI extends JFrame
     TypingRace typeRace = new TypingRace(40);
     CardLayout cardLayout = new CardLayout();
     GameSpecs currentGameSpecs;
+    final int MAX_PLAYERS = 6;
 
     public TypingRaceGUI (String title) {
         super(title);
@@ -41,11 +42,12 @@ public class TypingRaceGUI extends JFrame
     // Builds all cards upfront to avoid duplicates
     //
     private void buildAllCards() {
+        currentGameSpecs = new GameSpecs();
         buildWelcomeCard();
         buildChoosePassageCard();
         buildChooseNumTypists();
         buildChooseMods();
-        buildChooseTypistPresets();
+        callBuildChooseTypistPresets();
     }
 
     /**************************************
@@ -176,16 +178,16 @@ public class TypingRaceGUI extends JFrame
         getContentPane().add(choosePsgPanel, "choose passage");
 
         buttonArr[0].addActionListener(e -> {
-            currentGameSpecs = new GameSpecs("short");
+            currentGameSpecs.controlledSetPassageLength("short");
         });
         buttonArr[1].addActionListener(e -> {
-            currentGameSpecs = new GameSpecs("medium");
+            currentGameSpecs.controlledSetPassageLength("medium");
         });
         buttonArr[2].addActionListener(e -> {
-            currentGameSpecs = new GameSpecs("long");
+            currentGameSpecs.controlledSetPassageLength("long");
         });
         buttonArr[3].addActionListener(e -> {
-            currentGameSpecs = new GameSpecs("custom");
+            currentGameSpecs.controlledSetPassageLength("custom");
             boolean valid = false;
             String input = null;
             int customLength = 0;
@@ -373,71 +375,74 @@ public class TypingRaceGUI extends JFrame
         chooseModsPanel.add(continuePanel);
         chooseModsPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
-        buttonArr[0].addActionListener(e -> {
-            buttonArr[0].setOpaque(true);
+        for (JButton button:buttonArr) button.setOpaque(true);
 
+        buttonArr[0].addActionListener(e -> {
             if (currentGameSpecs.isAutocorrect()) {
                 currentGameSpecs.setAutocorrect(false);
-                buttonArr[0].setBackground(UIManager.getColor("Button.background"));    // default colour
-                buttonArr[0].setForeground(Color.BLACK);
-                buttonArr[0].setText("Select");
+                buttonDeselectColours(buttonArr[0]);
             }
             else {
                 currentGameSpecs.setAutocorrect(true);
-                buttonArr[0].setBackground(Color.BLUE);
-                buttonArr[0].setForeground(Color.BLUE);
-                buttonArr[0].setText("Deselect");
+                buttonSelectColours(buttonArr[0]);
             }
         });
         buttonArr[1].addActionListener(e -> {
-            buttonArr[1].setOpaque(true);
-
             if (currentGameSpecs.isCaffieneMode()) {
                 currentGameSpecs.setCaffieneMode(false);
-                buttonArr[1].setBackground(UIManager.getColor("Button.background"));    // default colour
-                buttonArr[1].setForeground(Color.BLACK);
-                buttonArr[1].setText("Select");
+                buttonDeselectColours(buttonArr[1]);
             }
+                
             else {
                 currentGameSpecs.setCaffieneMode(true);
-                buttonArr[1].setBackground(Color.BLUE);
-                buttonArr[1].setForeground(Color.BLUE);
-                buttonArr[1].setText("Deselect");
+                buttonSelectColours(buttonArr[1]);
             }
         });
         buttonArr[2].addActionListener(e -> {
-            buttonArr[2].setOpaque(true);
-
             if (currentGameSpecs.isNightShift()) {
                 currentGameSpecs.setNightShift(false);
-                buttonArr[2].setBackground(UIManager.getColor("Button.background"));    // default colour
-                buttonArr[2].setForeground(Color.BLACK);
-                buttonArr[2].setText("Select");
-                
+                buttonDeselectColours(buttonArr[2]);
             }
             else {
                 currentGameSpecs.setNightShift(true);
-                buttonArr[2].setBackground(Color.BLUE);
-                buttonArr[2].setForeground(Color.BLUE);
-                buttonArr[2].setText("Deselect");
+                buttonSelectColours(buttonArr[2]);
             }
         });
 
-        // Takes to next page, to be added
-        continueButton.addActionListener(e -> showScreen("choose typist presets"));
+        // Takes to next page
+        continueButton.addActionListener(e -> showScreen("choose typist presets 0"));
 
         getContentPane().add(chooseModsPanel, "choose mods");
     }
 
-    private void buildChooseTypistPresets () {
+    // changes made when button is deselected
+    private void buttonDeselectColours (JButton button) {
+        button.setBackground(UIManager.getColor("Button.background"));    // default colour
+        button.setForeground(Color.BLACK);
+        button.setText("Select");
+    }
+
+    // changes made when button is selected
+    private void buttonSelectColours (JButton button) {
+        button.setBackground(Color.BLUE);
+        button.setForeground(Color.BLUE);
+        button.setText("Deselect");
+    }
+
+    // Builds a card for a player to choose their typist
+    // seatNum starting from 0
+    private void buildChooseTypistPresets (int seatNum) {
 
         JPanel chooseTPresetPanel = new JPanel();
         chooseTPresetPanel.setLayout(new BoxLayout(chooseTPresetPanel, BoxLayout.Y_AXIS));
 
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        String title = "Player " + (seatNum + 1) + ", choose your Typist.";
+        JLabel titleLabel = new JLabel(title);
+
         JPanel[] panArr = new JPanel[5];
-        for (int i = 0; i < panArr.length; i++) {
+        for (int i=0;i<panArr.length;i++) {
             panArr[i] = new JPanel();
             panArr[i].setLayout(new BoxLayout(panArr[i], BoxLayout.Y_AXIS));
             panArr[i].setBorder(BorderFactory.createCompoundBorder(
@@ -449,7 +454,7 @@ public class TypingRaceGUI extends JFrame
         String[] labelNames = {"Flash Hands", "Deadeye Typist", "Hammer Hands", "Flow State", "Two-finger Tryhard"};
         JLabel[] labelArr = new JLabel[labelNames.length];
 
-        for (int i = 0; i < labelNames.length; i++) {
+        for (int i=0;i<labelNames.length;i++) {
             labelArr[i] = new JLabel(labelNames[i]);
             labelArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             panArr[i].add(labelArr[i]);
@@ -468,7 +473,7 @@ public class TypingRaceGUI extends JFrame
         };
         JTextArea[] descArr = new JTextArea[descriptions.length];
 
-        for (int i = 0; i < descriptions.length; i++) {
+        for (int i=0;i<descriptions.length;i++) {
             descArr[i] = new JTextArea(descriptions[i]);
             descArr[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             descArr[i].setEditable(false);
@@ -504,20 +509,24 @@ public class TypingRaceGUI extends JFrame
 
         // vertical centre positioning
         chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill top
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chooseTPresetPanel.add(titleLabel);
+        chooseTPresetPanel.add(Box.createVerticalStrut(20));
         chooseTPresetPanel.add(optionsPanel);
         chooseTPresetPanel.add(Box.createVerticalStrut(10));
         chooseTPresetPanel.add(continuePanel);
         chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
-        /*
+        // records a player's preset choice
         for (int i=0;i<buttonArr.length;i++) {
-            buttonArr[i].addActionListener(e -> {
-                currentGameSpecs.setChosenCharacter(/ADD SEAT INDEX HERE,i);
+            int presetNum = i;
+            buttonArr[presetNum].addActionListener(e -> {
+                currentGameSpecs.setChosenCharacter(seatNum,presetNum);
             });
-        }*/
+        }
 
-        // shared event listener - for colour change
+        // changes colour of selected button only, resets others
         for (JButton button : buttonArr) {
             button.setOpaque(true);
 
@@ -534,9 +543,23 @@ public class TypingRaceGUI extends JFrame
             });
         }
 
-        // Takes to next page, to be added
-        // continueButton.addActionListener(e -> showScreen("choose keyboard presets"));
+        // Takes to next page
+        continueButton.addActionListener(e -> {
+            int next = seatNum + 1;
+            if (next < currentGameSpecs.getSeatCount())
+                showScreen("choose typist presets " + next);
+            else
+                showScreen("choose keyboard presets");
+        });
 
-        getContentPane().add(chooseTPresetPanel, "choose typist presets");
+        getContentPane().add(chooseTPresetPanel, "choose typist presets " + seatNum);
+    }
+
+    // repeatedy calls buildChooseTypistPresets to build a card for each player choice
+    // builds maximum amount (6), even if all aren't used
+    private void callBuildChooseTypistPresets () {
+        for (int i=0;i<MAX_PLAYERS;i++) {
+            buildChooseTypistPresets(i);
+        }
     }
 }

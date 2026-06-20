@@ -14,11 +14,12 @@ public class GameSpecs {
     private boolean nightShift;
     private int[] chosenCharacter;
     
-    public GameSpecs(String passageLengthString) {
-        this.passageLength = allocatePassageLength(passageLengthString);
+    public GameSpecs() {
+        this.passageLength = 40;    // default value
+        this.seatCount = 6;     // maximum default value
     }
 
-    public int allocatePassageLength (String passLenStr) {
+    public int controlledSetPassageLength (String passLenStr) {
         if (passLenStr.equals("short"))
             return 20;
         else if (passLenStr.equals("medium"))
@@ -26,7 +27,7 @@ public class GameSpecs {
         else if (passLenStr.equals("long"))
             return 80;
         else if (passLenStr.equals("custom"))
-            return 0;  // needs custom input
+            return -1;  // needs custom input
         else
             throw new IllegalArgumentException("Invalid passage length: " + passLenStr);
     }
