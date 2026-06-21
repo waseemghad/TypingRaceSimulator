@@ -104,6 +104,9 @@ public class TypingRaceGUI extends JFrame
         JPanel choosePsgPanel = new JPanel();
         choosePsgPanel.setLayout(new BoxLayout(choosePsgPanel, BoxLayout.Y_AXIS));
 
+        // page title
+        JLabel titleLabel = new JLabel("Choose your passage length");
+
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         JPanel shortPanel = new JPanel();
@@ -170,8 +173,12 @@ public class TypingRaceGUI extends JFrame
             }
         }
 
-        choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill top
         optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill top
+        choosePsgPanel.add(titleLabel);
+        choosePsgPanel.add(Box.createVerticalStrut(30));
         choosePsgPanel.add(optionsPanel);
         choosePsgPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
@@ -229,6 +236,9 @@ public class TypingRaceGUI extends JFrame
         JPanel chooseNumTypistsPanel = new JPanel();
         chooseNumTypistsPanel.setLayout(new BoxLayout(chooseNumTypistsPanel, BoxLayout.Y_AXIS));
 
+        // page title
+        JLabel titleLabel = new JLabel("Choose the number of typists (players)");
+
         JLabel askHowMany = new JLabel("How many typists are playing? (maximum 6)");
         askHowMany.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -244,8 +254,11 @@ public class TypingRaceGUI extends JFrame
         JLabel errorLabel = new JLabel("");
         errorLabel.setForeground(Color.RED);
         errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         chooseNumTypistsPanel.add(Box.createVerticalGlue());
+        chooseNumTypistsPanel.add(titleLabel);
+        chooseNumTypistsPanel.add(Box.createVerticalStrut(30));
         chooseNumTypistsPanel.add(askHowMany);
         chooseNumTypistsPanel.add(Box.createVerticalStrut(20));
         chooseNumTypistsPanel.add(inputField);
@@ -280,6 +293,8 @@ public class TypingRaceGUI extends JFrame
 
         JPanel chooseModsPanel = new JPanel();
         chooseModsPanel.setLayout(new BoxLayout(chooseModsPanel, BoxLayout.Y_AXIS));
+        
+        JLabel titleLabel = new JLabel("Choose your game modifiers");
 
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
@@ -368,8 +383,13 @@ public class TypingRaceGUI extends JFrame
         continuePanel.add(continueButton);
 
         // vertical centre positioning
-        chooseModsPanel.add(Box.createVerticalGlue());   // expands to fill top
         optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // add to main panel
+        chooseModsPanel.add(Box.createVerticalGlue());   // expands to fill top
+        chooseModsPanel.add(titleLabel);
+        chooseModsPanel.add(Box.createVerticalStrut(30));
         chooseModsPanel.add(optionsPanel);
         chooseModsPanel.add(Box.createVerticalStrut(10));
         chooseModsPanel.add(continuePanel);
@@ -438,6 +458,7 @@ public class TypingRaceGUI extends JFrame
 
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        // page title
         String title = "Player " + (seatNum + 1) + ", choose your Typist.";
         JLabel titleLabel = new JLabel(title);
 
@@ -508,11 +529,13 @@ public class TypingRaceGUI extends JFrame
         continuePanel.add(continueButton);
 
         // vertical centre positioning
-        chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill top
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // add to main panel
+        chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill top
         chooseTPresetPanel.add(titleLabel);
-        chooseTPresetPanel.add(Box.createVerticalStrut(20));
+        chooseTPresetPanel.add(Box.createVerticalStrut(30));
         chooseTPresetPanel.add(optionsPanel);
         chooseTPresetPanel.add(Box.createVerticalStrut(10));
         chooseTPresetPanel.add(continuePanel);
