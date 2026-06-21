@@ -16,7 +16,10 @@ public class GameSpecs {
     
     public GameSpecs() {
         this.passageLength = 40;    // default value
-        this.seatCount = 6;     // maximum default value
+        this.seatCount = 6;     // maximum default value (temporary)
+        this.Autocorrect = false;    // default value
+        this.caffieneMode = false;    // default value
+        this.nightShift = false;    // default value
     }
 
     public int controlledSetPassageLength (String passLenStr) {
@@ -99,5 +102,15 @@ public class GameSpecs {
      */
     public int getChosenCharacter(int seatIndex) {
         return chosenCharacter[seatIndex];
+    }
+        
+    /**
+     * Sets default value (-1) for the chosen preset
+     * of a typist seat, indicating no character has been chosen yet
+     * 
+     * @param seatIndex the seat/typist index
+     */
+    public void nullifyCharacterPreset(int seatIndex) {
+        this.chosenCharacter[seatIndex] = -1;
     }
 }

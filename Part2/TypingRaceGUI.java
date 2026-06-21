@@ -335,6 +335,9 @@ public class TypingRaceGUI extends JFrame
                 else {  // successful input
                     errorLabel.setText("");
                     currentGameSpecs.setSeatCount(numTypists);
+                    for (int i=0;i<numTypists;i++) {
+                        currentGameSpecs.nullifyCharacterPreset(i);  // reset chosen characters
+                    }
 
                     showScreen("choose mods");
                 }
@@ -589,7 +592,11 @@ public class TypingRaceGUI extends JFrame
         continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         continuePanel.add(continueButton);
 
+        JLabel errorLabel = new JLabel("");
+        errorLabel.setForeground(Color.RED);
+
         // vertical centre positioning
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -600,6 +607,8 @@ public class TypingRaceGUI extends JFrame
         chooseTPresetPanel.add(optionsPanel);
         chooseTPresetPanel.add(Box.createVerticalStrut(10));
         chooseTPresetPanel.add(continuePanel);
+        chooseTPresetPanel.add(Box.createVerticalStrut(10));
+        chooseTPresetPanel.add(errorLabel);
         chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
         // records a player's preset choice
@@ -630,6 +639,11 @@ public class TypingRaceGUI extends JFrame
         // Takes to next page
         continueButton.addActionListener(e -> {
             int next = seatNum + 1;
+
+            if (currentGameSpecs.getChosenCharacter(seatNum) == -1) {
+                errorLabel.setText("Please select a typist before continuing.");
+                return;
+            }
             if (next < currentGameSpecs.getSeatCount())
                 showScreen("choose typist presets " + next);
             else
