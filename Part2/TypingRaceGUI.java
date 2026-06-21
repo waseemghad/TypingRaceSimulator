@@ -44,6 +44,7 @@ public class TypingRaceGUI extends JFrame
     private void buildAllCards() {
         currentGameSpecs = new GameSpecs();
         buildWelcomeCard();
+        buildRulesCard();
         buildChoosePassageCard();
         buildChooseNumTypists();
         buildChooseMods();
@@ -53,6 +54,7 @@ public class TypingRaceGUI extends JFrame
     /**************************************
      * Card names:
      *      welcome
+     *      rules
      *      choose passage
      *      choose number of typists
      *      choose mods
@@ -93,11 +95,66 @@ public class TypingRaceGUI extends JFrame
         getContentPane().add(welcomePanel, "welcome");
 
         startButton.addActionListener(e -> 
-            showScreen("choose passage")
+            showScreen("rules")
         );
     }
+    
+    // Displays the rules and instructions for the game
+    //
+    private void buildRulesCard () {
 
-    // Lets you choose your passage length
+        JPanel rulesPanel = new JPanel();
+        rulesPanel.setLayout(new BoxLayout(rulesPanel, BoxLayout.Y_AXIS));
+
+        // page title
+        JLabel titleLabel = new JLabel("Rules and Instructions");
+        JTextArea rulesTextArea = new JTextArea();
+        JButton readyButton = new JButton("Ready!");
+
+        String rulesText = "In this typing simulation, you will race with your friends to see whose typist reaches the end first and wins! \n" + //
+                        "\n" + //
+                        "The game is round based. Each round, your typist could:\n" + //
+                        " - type correctly to advance one step\n" + //
+                        " - mistype to fall backwards two steps\n" + //
+                        " - burnout and stay stuck for 5 rounds!\n" + //
+                        "\n" + //
+                        "Choose from various typists with different levels of accuracy. Higher accuracy means less mistypes, though it also means higher chances of burning out.. The winner gets their accuracy bumped up - go for another round to see if the others can catch up!\n" + //
+                        "\n" + //
+                        "You can also select game modifiers to shake up the race and keep things competitive! \n" + //
+                        "\n" + //
+                        "\n" + //
+                        "Are you ready?";
+
+        rulesTextArea.setText(rulesText);
+        rulesTextArea.setWrapStyleWord(true);
+        rulesTextArea.setLineWrap(true);
+        rulesTextArea.setPreferredSize(new Dimension(500,500));
+        rulesTextArea.setMaximumSize(new Dimension(500,500));
+        rulesTextArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // padding
+
+        // vertical centre positioning
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rulesTextArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        readyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Takes to next page
+        readyButton.addActionListener(e -> {
+            showScreen("choose passage");
+        });
+
+        // add to main panel
+        rulesPanel.add(Box.createVerticalGlue());   // expands to fill top
+        rulesPanel.add(titleLabel);
+        rulesPanel.add(Box.createVerticalStrut(30));
+        rulesPanel.add(rulesTextArea);
+        rulesPanel.add(Box.createVerticalStrut(20));
+        rulesPanel.add(readyButton);
+        rulesPanel.add(Box.createVerticalGlue());   // expands to fill bottom
+
+        getContentPane().add(rulesPanel, "rules");
+    }
+
+    // User chooses passage length (number of characters)
     //
     private void buildChoosePassageCard () {
 
@@ -109,8 +166,9 @@ public class TypingRaceGUI extends JFrame
 
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        // 'padding' for inside border (empty borders)
         JPanel shortPanel = new JPanel();
-        shortPanel.setLayout(new BoxLayout(shortPanel, BoxLayout.Y_AXIS));      // 'empty borders' for inside border (padding)
+        shortPanel.setLayout(new BoxLayout(shortPanel, BoxLayout.Y_AXIS));
         shortPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         JPanel mediumPanel = new JPanel();
         mediumPanel.setLayout(new BoxLayout(mediumPanel, BoxLayout.Y_AXIS));
@@ -329,6 +387,7 @@ public class TypingRaceGUI extends JFrame
         JTextArea aCorrDesc = new JTextArea("* 25% chance of triggering\n" +
             "• -50% Mistype Slideback\n" +
             "\n" +
+            "\n" +
             "When enabled, the slideBack amount is halved, simulating modern phone keyboards.");
         aCorrDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
         aCorrDesc.setEditable(false);
@@ -346,6 +405,8 @@ public class TypingRaceGUI extends JFrame
         cModeDesc.setWrapStyleWord(true);
         cModeDesc.setPreferredSize(new Dimension(200,200));
         JTextArea nShiftDesc = new JTextArea("• -33% Typing Accuracy\n" +
+            "\n" +
+            "\n" +
             "\n" +
             "Accuracy ratings are slightly reduced across the board: everyone is tired.");
         nShiftDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
