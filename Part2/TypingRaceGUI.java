@@ -49,6 +49,7 @@ public class TypingRaceGUI extends JFrame
         buildChooseNumTypists();
         buildChooseMods();
         callBuildChooseTypistPresets();
+        callBuildChooseNameAndSymbol();
     }
 
     /**************************************
@@ -302,9 +303,9 @@ public class TypingRaceGUI extends JFrame
         
         JTextField inputField = new JTextField(2);
         inputField.setMaximumSize(new Dimension(200, inputField.getPreferredSize().height));
-        inputField.setAlignmentX(Component.CENTER_ALIGNMENT);
             // constrains the inputField height to its preferred size,
             // so it doesn't fill up the screen because of BoxLayout.Y_AXIS
+        inputField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -334,15 +335,20 @@ public class TypingRaceGUI extends JFrame
                 }
                 else {  // successful input
                     errorLabel.setText("");
-                    currentGameSpecs.setSeatCount(numTypists);
+                    currentGameSpecs.setSeatCount(numTypists);  // also decares chosenTypists array
+                    currentGameSpecs.declareCharacterNamesArray(numTypists);
+                    currentGameSpecs.declareCharacterSymbolsArray(numTypists);
+                    
                     for (int i=0;i<numTypists;i++) {
-                        currentGameSpecs.nullifyCharacterPreset(i);  // reset chosen characters
+                        currentGameSpecs.nullifyCharacterPreset(i);    // reset chosen characters
+                        currentGameSpecs.nullifyCharacterName(i);      // reset chosen names
+                        currentGameSpecs.nullifyCharacterSymbol(i);    // reset chosen symbols
                     }
 
                     showScreen("choose mods");
                 }
             }
-            catch (NumberFormatException ex) {  
+            catch (NumberFormatException ex) {  // also handles null input
                 errorLabel.setText("Please enter a valid integer from 2 to 6");
             }
         });
@@ -611,11 +617,11 @@ public class TypingRaceGUI extends JFrame
         chooseTPresetPanel.add(errorLabel);
         chooseTPresetPanel.add(Box.createVerticalGlue());   // expands to fill bottom
 
-        // records a player's preset choice
+        // records a player's typist choice
         for (int i=0;i<buttonArr.length;i++) {
             int presetNum = i;
             buttonArr[presetNum].addActionListener(e -> {
-                currentGameSpecs.setChosenCharacter(seatNum,presetNum);
+                currentGameSpecs.setTypist(seatNum,presetNum);
             });
         }
 
@@ -640,17 +646,18 @@ public class TypingRaceGUI extends JFrame
         continueButton.addActionListener(e -> {
             int next = seatNum + 1;
 
-            if (currentGameSpecs.getChosenCharacter(seatNum) == -1) {
+            if (currentGameSpecs.getTypist(seatNum) == -1) {
                 errorLabel.setText("Please select a typist before continuing.");
                 return;
             }
             if (next < currentGameSpecs.getSeatCount())
                 showScreen("choose typist presets " + next);
             else
-                showScreen("choose keyboard presets");
+                showScreen("choose name and symbol 0");
         });
 
         getContentPane().add(chooseTPresetPanel, "choose typist presets " + seatNum);
+        // e.g. "choose typist presets 2" for player 3
     }
 
     // repeatedy calls buildChooseTypistPresets to build a card for each player choice
@@ -658,6 +665,127 @@ public class TypingRaceGUI extends JFrame
     private void callBuildChooseTypistPresets () {
         for (int i=0;i<MAX_PLAYERS;i++) {
             buildChooseTypistPresets(i);
+        }
+    }
+
+    private void buildChooseNameAndSymbol (int seatNum) {
+        JPanel chooseNameAndSymbolPanel = new JPanel();
+        chooseNameAndSymbolPanel.setLayout(new BoxLayout(chooseNameAndSymbolPanel, BoxLayout.Y_AXIS));
+
+        String title = "Player " + (seatNum+1) + ", choose your Typist's name and symbol";
+        JLabel titleLabel = new JLabel(title);
+
+        JPanel panelsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel namePanel = new JPanel();
+        JPanel symbolPanel = new JPanel();
+        namePanel.setPreferredSize(new Dimension(200,400));
+        symbolPanel.setPreferredSize(new Dimension(200,400));
+
+        JPanel[] panelArr = {namePanel,symbolPanel};
+
+        for (JPanel p : panelArr) {
+            p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
+            p.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        }
+
+        // HTML for text wrap
+        JLabel nameLabel = new JLabel("<html>Type in your player name</html>");
+        JLabel symbolLabel = new JLabel("<html>Type in your symbol (Choose any character you want!)</html>");
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        symbolLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+        JTextField nameInput = new JTextField(2);
+        nameInput.setMaximumSize(new Dimension(200, nameInput.getPreferredSize().height));
+        nameInput.setPreferredSize(new Dimension(200, nameInput.getPreferredSize().height));
+        JTextField symbolInput = new JTextField(2);
+        symbolInput.setMaximumSize(new Dimension(200, symbolInput.getPreferredSize().height));
+        symbolInput.setPreferredSize(new Dimension(200, symbolInput.getPreferredSize().height));
+
+        JLabel errorLabel = new JLabel("");
+        errorLabel.setForeground(Color.RED);
+        
+        for (JPanel p : panelArr) p.add(Box.createVerticalGlue());
+
+        namePanel.add(nameLabel);
+        namePanel.add(Box.createVerticalStrut(100));
+        namePanel.add(nameInput);
+
+        symbolPanel.add(symbolLabel);
+        symbolPanel.add(Box.createVerticalStrut(100));
+        symbolPanel.add(symbolInput);
+
+        for (JPanel p : panelArr) p.add(Box.createVerticalGlue());
+
+        panelsPanel.add(namePanel);
+        panelsPanel.add(Box.createHorizontalStrut(20));
+        panelsPanel.add(symbolPanel);
+    
+        JButton continueButton = new JButton("Continue");
+
+        // vertical centre positioning
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        symbolLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameInput.setAlignmentX(Component.CENTER_ALIGNMENT);
+        symbolInput.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        continueButton.addActionListener(e -> {
+            String nameString = nameInput.getText();
+            String symbolString = symbolInput.getText();
+            try {
+                nameString = nameString.trim();
+                symbolString = symbolString.trim();
+                if (symbolString.length() < 1 || nameString.equals("") || symbolString==null||nameString==null) {
+                    errorLabel.setText("Please fill in both fields");
+                }
+                else if (symbolString.length() > 1) {
+                    errorLabel.setText("Please type in only one character for your symbol \n" +
+                    "(note: emojis aren't supported)");
+                }
+                else {  // successful input
+                    errorLabel.setText("");
+                    char symbolChar = symbolString.charAt(0);
+                    int nextPg = seatNum + 1;
+
+                    currentGameSpecs.setCharacterName(seatNum,nameString);
+                    currentGameSpecs.setCharacterSymbol(seatNum,symbolChar);
+                    // takes to next page
+                    if (nextPg < currentGameSpecs.getSeatCount())
+                        showScreen("choose name and symbol " + nextPg);
+                    else {
+                        showScreen("start game");   // to be created
+                    }
+                }
+            }
+            catch (NullPointerException | IndexOutOfBoundsException ex) {  // handles null input
+                errorLabel.setText("Please fill in both fields");
+            }
+        });
+
+        // add to main panel
+        chooseNameAndSymbolPanel.add(Box.createVerticalGlue());   // expands to fill top
+        chooseNameAndSymbolPanel.add(titleLabel);
+        chooseNameAndSymbolPanel.add(Box.createVerticalStrut(30));
+        chooseNameAndSymbolPanel.add(panelsPanel);
+        chooseNameAndSymbolPanel.add(Box.createVerticalStrut(30));
+        chooseNameAndSymbolPanel.add(continueButton);
+        chooseNameAndSymbolPanel.add(Box.createVerticalStrut(20));
+        chooseNameAndSymbolPanel.add(errorLabel);
+        chooseNameAndSymbolPanel.add(Box.createVerticalGlue());   // expands to fill bottom
+
+        getContentPane().add(chooseNameAndSymbolPanel, "choose name and symbol " + seatNum);
+        // e.g. "choose name and symbol 2" for player 3
+    }
+
+    // repeatedy calls buildChooseNameAndSymbol to build a card for each player's inputs
+    // builds maximum amount (6), even if all aren't used
+    private void callBuildChooseNameAndSymbol () {
+        for (int i=0;i<MAX_PLAYERS;i++) {
+            buildChooseNameAndSymbol(i);
         }
     }
 }

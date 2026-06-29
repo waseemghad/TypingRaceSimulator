@@ -12,7 +12,9 @@ public class GameSpecs {
     private boolean Autocorrect;
     private boolean caffieneMode;
     private boolean nightShift;
-    private int[] chosenCharacter;
+    private int[] chosenTypists;
+    private String[] characterNames;
+    private char[] characterSymbols;
     
     public GameSpecs() {
         this.passageLength = 40;    // default value
@@ -48,14 +50,16 @@ public class GameSpecs {
     }
     
     /**
-     * Sets the seat count and declares array of characters
-     * correspoonding to the seat count
+     * Sets the seat count and declares array 
+     * containing values that correspond to the
+     * Typist preset that each player is to choose
      * 
      * @param seatCount the number of typists playing
+     * @param chosenTypists array of numbers corr. to the typist each player chose
      */
     public void setSeatCount(int seatCount) {
         this.seatCount = seatCount;
-        chosenCharacter = new int[seatCount];
+        this.chosenTypists = new int[seatCount];
     }
     
     public boolean isAutocorrect() {
@@ -83,25 +87,26 @@ public class GameSpecs {
     }
 
     /**
-     * Sets value for a specific seat's character preset
-     * The value of characters range from 0 to 4,
-     * with -1 being value for no character
+     * Sets value for a specific player's Typist preset
+     * The value of Typists range from 0 to 4 incl.,
+     * with -1 being value for no Typist
      * 
-     * @param seatIndex the seat/typist index
-     * @param characterPreset the value of the chosen character preset
+     * @param seatIndex the seat/player index
+     * @param chosenTypists array of numbers corr. to the typist each player chose
      */
-    public void setChosenCharacter(int seatIndex, int characterPreset) {
-        this.chosenCharacter[seatIndex] = characterPreset;
+    public void setTypist(int seatIndex, int Typist) {
+        this.chosenTypists[seatIndex] = Typist;
     }
     
     /**
-     * Returns the chosen character preset for a specific seat
+     * Returns the chosen Typist for a specific seat
      * 
-     * @param seatIndex the seat/typist index
-     * @return the character preset for that seat
+     * @param seatIndex the seat/player index
+     * @param chosenTypists array of numbers corr. to the typist each player chose
+     * @return the Typist corresponding to the player
      */
-    public int getChosenCharacter(int seatIndex) {
-        return chosenCharacter[seatIndex];
+    public int getTypist(int seatIndex) {
+        return chosenTypists[seatIndex];
     }
         
     /**
@@ -109,8 +114,41 @@ public class GameSpecs {
      * of a typist seat, indicating no character has been chosen yet
      * 
      * @param seatIndex the seat/typist index
+     * @param chosenTypists array of numbers corr. to the typist each player chose
      */
     public void nullifyCharacterPreset(int seatIndex) {
-        this.chosenCharacter[seatIndex] = -1;
+        this.chosenTypists[seatIndex] = -1;
+    }
+
+    public String getCharacterName(int index) {
+        return characterNames[index];
+    }
+
+    public void declareCharacterNamesArray(int seatCount) {
+        this.characterNames = new String[seatCount];
+    }
+
+    public void declareCharacterSymbolsArray(int seatCount) {
+        this.characterSymbols = new char[seatCount];
+    }
+
+    public void setCharacterName(int seatIndex, String name) {
+        this.characterNames[seatIndex] = name;
+    }
+
+    public void nullifyCharacterName(int seatIndex) {
+        this.characterNames[seatIndex] = null;
+    }
+
+    public char getCharacterSymbol(int index) {
+        return characterSymbols[index];
+    }
+
+    public void setCharacterSymbol(int seatIndex, char symbol) {
+        this.characterSymbols[seatIndex] = symbol;
+    }
+
+    public void nullifyCharacterSymbol(int seatIndex) {
+        this.characterSymbols[seatIndex] = '\0';
     }
 }
