@@ -7,6 +7,14 @@ package part2;
  * @version 1.0
  */
 public class GameSpecs {
+    private static final double DEFAULT_MISTYPE_BASE_CHANCE = 0.3;
+    private static final int DEFAULT_SLIDE_BACK_AMOUNT = 2;
+    private static final int DEFAULT_BURNOUT_DURATION = 5;
+    private static final double DEFAULT_BURNOUT_BASE_CHANCE = 0.3;
+    private static final double DEFAULT_BURNOUT_ACCURACY_DECREASE = 0.005;
+    private static final double DEFAULT_WINNER_ACCURACY_INCREASE = 0.1;
+    private static final double[] DEFAULT_PRESET_ACCURACIES = {0.70, 0.90, 0.30, 0.60, 0.40};
+
     private int passageLength;
     private int seatCount;
     private boolean Autocorrect;
@@ -15,6 +23,13 @@ public class GameSpecs {
     private int[] chosenTypists;
     private String[] characterNames;
     private char[] characterSymbols;
+    private double mistypeBaseChance;
+    private int slideBackAmount;
+    private int burnoutDuration;
+    private double burnoutBaseChance;
+    private double burnoutAccuracyDecrease;
+    private double winnerAccuracyIncrease;
+    private double[] presetAccuracies;
     
     public GameSpecs() {
         this.passageLength = 40;    // default value
@@ -22,6 +37,13 @@ public class GameSpecs {
         this.Autocorrect = false;    // default value
         this.caffieneMode = false;    // default value
         this.nightShift = false;    // default value
+        this.mistypeBaseChance = DEFAULT_MISTYPE_BASE_CHANCE;
+        this.slideBackAmount = DEFAULT_SLIDE_BACK_AMOUNT;
+        this.burnoutDuration = DEFAULT_BURNOUT_DURATION;
+        this.burnoutBaseChance = DEFAULT_BURNOUT_BASE_CHANCE;
+        this.burnoutAccuracyDecrease = DEFAULT_BURNOUT_ACCURACY_DECREASE;
+        this.winnerAccuracyIncrease = DEFAULT_WINNER_ACCURACY_INCREASE;
+        this.presetAccuracies = DEFAULT_PRESET_ACCURACIES.clone();
     }
 
     public int controlledSetPassageLength (String passLenStr) {
@@ -120,6 +142,62 @@ public class GameSpecs {
         this.chosenTypists[seatIndex] = -1;
     }
 
+    public double getMistypeBaseChance() {
+        return mistypeBaseChance;
+    }
+
+    public void setMistypeBaseChance(double mistypeBaseChance) {
+        this.mistypeBaseChance = mistypeBaseChance;
+    }
+
+    public int getSlideBackAmount() {
+        return slideBackAmount;
+    }
+
+    public void setSlideBackAmount(int slideBackAmount) {
+        this.slideBackAmount = slideBackAmount;
+    }
+
+    public int getBurnoutDuration() {
+        return burnoutDuration;
+    }
+
+    public void setBurnoutDuration(int burnoutDuration) {
+        this.burnoutDuration = burnoutDuration;
+    }
+
+    public double getBurnoutBaseChance() {
+        return burnoutBaseChance;
+    }
+
+    public void setBurnoutBaseChance(double burnoutBaseChance) {
+        this.burnoutBaseChance = burnoutBaseChance;
+    }
+
+    public double getBurnoutAccuracyDecrease() {
+        return burnoutAccuracyDecrease;
+    }
+
+    public void setBurnoutAccuracyDecrease(double burnoutAccuracyDecrease) {
+        this.burnoutAccuracyDecrease = burnoutAccuracyDecrease;
+    }
+
+    public double getWinnerAccuracyIncrease() {
+        return winnerAccuracyIncrease;
+    }
+
+    public void setWinnerAccuracyIncrease(double winnerAccuracyIncrease) {
+        this.winnerAccuracyIncrease = winnerAccuracyIncrease;
+    }
+
+    public double getPresetAccuracy(int index) {
+        return presetAccuracies[index];
+    }
+
+    public void setPresetAccuracies(double[] presetAccuracies) {
+        this.presetAccuracies = presetAccuracies.clone();
+    }
+
     public String getCharacterName(int index) {
         return characterNames[index];
     }
@@ -150,5 +228,9 @@ public class GameSpecs {
 
     public void nullifyCharacterSymbol(int seatIndex) {
         this.characterSymbols[seatIndex] = '\0';
+    }
+
+    public double roundAccuracy(double accuracy) {
+        return Math.round(accuracy * 100.0) / 100.0;
     }
 }

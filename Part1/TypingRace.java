@@ -1,5 +1,6 @@
 package part1;
 
+import part2.GameSpecs;
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 
@@ -8,14 +9,17 @@ import java.lang.Math;
  * advancing character by character — or sliding backwards when they mistype.
  *
  * @author Waseem Ghadari
- * @version  1.2
+ * @version  1.3
  */
 public class TypingRace
 {
     private int passageLength;   // Total characters in the passage to type
+    // private Typist typistArr;                <-------------- HERE
     private Typist seat1Typist;
     private Typist seat2Typist;
     private Typist seat3Typist;
+    private GameSpecs gameSpecs;
+    boolean guiMode = false;
 
     // Accuracy thresholds for mistype and burnout events
     private static final double MISTYPE_BASE_CHANCE = 0.3;
@@ -24,6 +28,48 @@ public class TypingRace
     private static final double BURNOUT_BASE_CHANCE = 0.3;
     private static final double BURNOUT_ACCURACY_DECREASE  = 0.005;
     private static final double WINNER_ACCURACY_INCREASE  = 0.1;
+
+    private double getEffectiveMistypeBaseChance() {
+        if (gameSpecs != null) {
+            return gameSpecs.getMistypeBaseChance();
+        }
+        return MISTYPE_BASE_CHANCE;
+    }
+
+    private int getEffectiveSlideBackAmount() {
+        if (gameSpecs != null) {
+            return gameSpecs.getSlideBackAmount();
+        }
+        return SLIDE_BACK_AMOUNT;
+    }
+
+    private int getEffectiveBurnoutDuration() {
+        if (gameSpecs != null) {
+            return gameSpecs.getBurnoutDuration();
+        }
+        return BURNOUT_DURATION;
+    }
+
+    private double getEffectiveBurnoutBaseChance() {
+        if (gameSpecs != null) {
+            return gameSpecs.getBurnoutBaseChance();
+        }
+        return BURNOUT_BASE_CHANCE;
+    }
+
+    private double getEffectiveBurnoutAccuracyDecrease() {
+        if (gameSpecs != null) {
+            return gameSpecs.getBurnoutAccuracyDecrease();
+        }
+        return BURNOUT_ACCURACY_DECREASE;
+    }
+
+    private double getWinnerBonus() {
+        if (gameSpecs != null) {
+            return gameSpecs.getWinnerAccuracyIncrease();
+        }
+        return WINNER_ACCURACY_INCREASE;
+    }
 
     /**
      * Constructor for objects of class TypingRace.
@@ -38,6 +84,72 @@ public class TypingRace
         seat1Typist = null;
         seat2Typist = null;
         seat3Typist = null;
+    }
+
+    /**
+     * Sets the guiMode variable to true
+     * 
+     * @param guiMode boolean whether GUI mode is active
+     */
+    public void setGuiModeTrue()
+    {
+        this.guiMode = true;
+    }
+
+    /**
+     * Method that implements the game specifications of the GUI mode
+     * 
+     * Game variables are adjusted if the GUI mode is being played
+     * 
+     */
+    public void bridge()
+    {
+        guiMode = true;
+
+    }
+
+    /**
+     * Applies GUI-selected settings to this race.
+     *
+     * @param specs the selected game settings
+     */
+    public void applyGameSpecs(GameSpecs specs)
+    {
+        this.gameSpecs = specs;
+        if (specs != null)
+        {
+            this.passageLength = specs.getPassageLength();
+        }
+    }
+
+    /**
+     * Returns the currently configured game specs.
+     *
+     * @return the stored GameSpecs object
+     */
+    public GameSpecs getGameSpecs()
+    {
+        return gameSpecs;
+    }
+
+    /**
+     * Returns the race passage length.
+     *
+     * @return passage length in characters
+     */
+    public int getPassageLength()
+    {
+        return passageLength;
+    }
+
+    /**
+     * Updates the race passage length.
+     *
+     * @param passageLength the new passage length
+     */
+    public void setPassageLength(int passageLength)
+    {
+        this.passageLength = passageLength;
     }
 
     /**
@@ -134,15 +246,15 @@ public class TypingRace
      */
     public void findWinner (Typist theTypist)
     {
-        double oldAccuracy = 0.0;
-
         if (raceFinishedBy(theTypist))
         {
-            oldAccuracy = theTypist.getAccuracy();
-            theTypist.setAccuracy(roundTo3dp(oldAccuracy + WINNER_ACCURACY_INCREASE));
+            double oldAccuracy = theTypist.getAccuracy();
+            double newAccuracy = roundTo3dp(oldAccuracy + getWinnerBonus());
+            theTypist.setAccuracy(newAccuracy);
+
             System.out.println();
             System.out.println("And the winner is... " + theTypist.getName() + "!");
-            System.out.println("Final accuracy: " + theTypist.getAccuracy() + " (improved from " + oldAccuracy + ")");
+            System.out.println("Final accuracy: " + roundTo3dp(theTypist.getAccuracy()) + " (improved from " + roundTo3dp(oldAccuracy) + ")");
         }
     }
 
@@ -171,15 +283,15 @@ public class TypingRace
         // Burnout check — pushing too hard increases burnout risk
         if (determineBurnout(theTypist))
         {
-            theTypist.burnOut(BURNOUT_DURATION);
+            theTypist.burnOut(getEffectiveBurnoutDuration());
             theTypist.setMistype(false);
             theTypist.resetMistypeCounter();
-            theTypist.setAccuracy(roundTo3dp(theTypist.getAccuracy() - BURNOUT_ACCURACY_DECREASE));
+            theTypist.setAccuracy(roundTo3dp(theTypist.getAccuracy() - getEffectiveBurnoutAccuracyDecrease()));
         }
         // Mistype check — the probability should reflect the typist's accuracy
         else if (determineMistype(theTypist))
         {
-            theTypist.slideBack(SLIDE_BACK_AMOUNT);
+            theTypist.slideBack(getEffectiveSlideBackAmount());
             theTypist.setMistype(true);
             theTypist.plusMistypeCounter();
         }
@@ -205,7 +317,7 @@ public class TypingRace
     private boolean determineBurnout(Typist theTypist)
     {
         boolean burnoutResult;
-        if (Math.random() < BURNOUT_BASE_CHANCE * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < getEffectiveBurnoutBaseChance() * theTypist.getAccuracy() * theTypist.getAccuracy())
             burnoutResult = true;
         else
             burnoutResult = false;
@@ -225,7 +337,7 @@ public class TypingRace
     private boolean determineMistype(Typist theTypist)
     {
         boolean mistypeResult;
-        if (Math.random() < (1-theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+        if (Math.random() < (1-theTypist.getAccuracy()) * getEffectiveMistypeBaseChance())
             mistypeResult = true;
         else
             mistypeResult = false;

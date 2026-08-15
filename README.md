@@ -9,17 +9,20 @@ TypingRaceSimulator/
 ├── Part1/                 # Textual simulation (Java, command-line)
 │   ├── TypingRace.java        # Public - main race logic
 │   └── Typist.java            # Package-private - typist data/behavior
-└── Part2/                 # GUI simulation (to be completed)
+└── Part2/                 # GUI simulation (Java Swing User Interface)
+│   ├── TypingRaceGUI.java        # Public - GUI implementation and runs some game logic
+│   └── GameSpecs.java            # Public - class to support with the game modifications
 ```
 
-## Part 1 — Textual Simulation
+# Part 1 — Textual Simulation
 
 ### How to compile
 
 Note: now compiles differently, old method won't work
 
+Open command prompt/terminal and type:
 ```bash
-javac Part1/*.java Part2/*.java
+javac Part1/*.java
 ```
 
 ### How to run
@@ -41,7 +44,7 @@ A simple way to change the icons, names or accuracy is to locate and edit the `m
 Then run:
 
 ```bash
-java part2.TypingRaceGUI
+java part1.TypingRace.java
 ```
 
 ## Dependencies
@@ -52,3 +55,23 @@ java part2.TypingRaceGUI
 
 - Compiling and running is now different - must be done from TypingRaceSimulator directory
 - If running in terminal, the game only supports three Typists
+
+# Part 2 — Graphics User Interface Simulation
+
+### How to compile
+
+Open command prompt/terminal and type:
+```bash
+javac Part1/*.java Part2/*.java
+```
+
+### How to run
+
+Run:
+```bash
+java part2.TypingRaceGUI.java
+```
+
+## Dependencies
+
+- Java Development Kit (JDK) 11 or higher

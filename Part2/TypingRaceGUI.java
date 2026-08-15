@@ -1,10 +1,13 @@
 package part2;
 
 import part1.TypingRace;
+import part1.Typist;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A typing race simulation. Three typists race to complete a passage of text,
@@ -19,6 +22,15 @@ public class TypingRaceGUI extends JFrame
     CardLayout cardLayout = new CardLayout();
     GameSpecs currentGameSpecs;
     final int MAX_PLAYERS = 6;
+
+    private final List<Typist> raceTypists = new ArrayList<>();
+    private final List<RaceLaneView> raceLaneViews = new ArrayList<>();
+    private JLabel raceStatusLabel;
+    private JTextArea raceSummaryArea;
+    private JButton startRaceButton;
+    private JButton resetRaceButton;
+    private Timer raceTimer;
+    private int raceTurnCount;
 
     public TypingRaceGUI (String title) {
         super(title);
@@ -50,6 +62,7 @@ public class TypingRaceGUI extends JFrame
         buildChooseMods();
         callBuildChooseTypistPresets();
         callBuildChooseNameAndSymbol();
+        buildStartGameCard();
     }
 
     /**************************************
@@ -244,13 +257,13 @@ public class TypingRaceGUI extends JFrame
         getContentPane().add(choosePsgPanel, "choose passage");
 
         buttonArr[0].addActionListener(e -> {
-            currentGameSpecs.controlledSetPassageLength("short");
+            currentGameSpecs.setPassageLength(currentGameSpecs.controlledSetPassageLength("short"));
         });
         buttonArr[1].addActionListener(e -> {
-            currentGameSpecs.controlledSetPassageLength("medium");
+            currentGameSpecs.setPassageLength(currentGameSpecs.controlledSetPassageLength("medium"));
         });
         buttonArr[2].addActionListener(e -> {
-            currentGameSpecs.controlledSetPassageLength("long");
+            currentGameSpecs.setPassageLength(currentGameSpecs.controlledSetPassageLength("long"));
         });
         buttonArr[3].addActionListener(e -> {
             currentGameSpecs.controlledSetPassageLength("custom");
@@ -757,7 +770,9 @@ public class TypingRaceGUI extends JFrame
                     if (nextPg < currentGameSpecs.getSeatCount())
                         showScreen("choose name and symbol " + nextPg);
                     else {
+                        prepareRaceScreen();
                         showScreen("start game");   // to be created
+                        startGuiRace();
                     }
                 }
             }
@@ -787,5 +802,344 @@ public class TypingRaceGUI extends JFrame
         for (int i=0;i<MAX_PLAYERS;i++) {
             buildChooseNameAndSymbol(i);
         }
+    }
+
+    private void buildStartGameCard() {
+        JPanel startGamePanel = new JPanel(new BorderLayout(20, 20));
+        startGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("Race Day");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        raceStatusLabel = new JLabel("Press Start Race to begin.");
+        raceStatusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        raceSummaryArea = new JTextArea(6, 60);
+        raceSummaryArea.setEditable(false);
+        raceSummaryArea.setLineWrap(true);
+        raceSummaryArea.setWrapStyleWord(true);
+        raceSummaryArea.setBackground(UIManager.getColor("Panel.background"));
+        raceSummaryArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        topPanel.add(titleLabel);
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(raceStatusLabel);
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(raceSummaryArea);
+
+        JPanel lanesPanel = new JPanel();
+        lanesPanel.setLayout(new BoxLayout(lanesPanel, BoxLayout.Y_AXIS));
+        lanesPanel.setBorder(BorderFactory.createTitledBorder("Race Lanes"));
+
+        raceLaneViews.clear();
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            RaceLaneView laneView = new RaceLaneView(i);
+            raceLaneViews.add(laneView);
+            lanesPanel.add(laneView.panel);
+            lanesPanel.add(Box.createVerticalStrut(10));
+        }
+
+        JScrollPane lanesScrollPane = new JScrollPane(lanesPanel);
+        lanesScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        startRaceButton = new JButton("Start Race");
+        resetRaceButton = new JButton("Reset Race");
+        startRaceButton.setEnabled(false);
+        resetRaceButton.setEnabled(false);
+        controlsPanel.add(startRaceButton);
+        controlsPanel.add(resetRaceButton);
+
+        startRaceButton.addActionListener(e -> startGuiRace());
+        resetRaceButton.addActionListener(e -> prepareRaceScreen());
+
+        startGamePanel.add(topPanel, BorderLayout.NORTH);
+        startGamePanel.add(lanesScrollPane, BorderLayout.CENTER);
+        startGamePanel.add(controlsPanel, BorderLayout.SOUTH);
+
+        getContentPane().add(startGamePanel, "start game");
+    }
+
+    private void prepareRaceScreen() {
+        stopRaceTimer();
+        typeRace.applyGameSpecs(currentGameSpecs);
+        raceTurnCount = 0;
+
+        for (RaceLaneView laneView : raceLaneViews) {
+            laneView.clear();
+        }
+
+        int seatCount = currentGameSpecs.getSeatCount();
+        if (raceTypists.size() == seatCount && seatCount > 0) {
+            for (int seatIndex = 0; seatIndex < seatCount; seatIndex++) {
+                Typist typist = raceTypists.get(seatIndex);
+                typist.resetToStart();
+                typist.resetMistypeCounter();
+                typist.setMistype(false);
+                raceLaneViews.get(seatIndex).setVisible(true);
+                raceLaneViews.get(seatIndex).setTypistLabel(typist);
+                raceLaneViews.get(seatIndex).setLaneText(buildLaneText(typist));
+                raceLaneViews.get(seatIndex).setStatusText("Ready");
+            }
+        }
+        else {
+            raceTypists.clear();
+            for (int seatIndex = 0; seatIndex < seatCount; seatIndex++) {
+                Typist typist = createTypistForSeat(seatIndex);
+                raceTypists.add(typist);
+                raceLaneViews.get(seatIndex).setVisible(true);
+                raceLaneViews.get(seatIndex).setTypistLabel(typist);
+                raceLaneViews.get(seatIndex).setLaneText(buildLaneText(typist));
+                raceLaneViews.get(seatIndex).setStatusText("Ready");
+            }
+        }
+
+        raceSummaryArea.setText(buildRaceSummary());
+        raceStatusLabel.setText("Ready. Press Start Race to begin.");
+        startRaceButton.setEnabled(true);
+        resetRaceButton.setEnabled(true);
+    }
+
+    private void startGuiRace() {
+        if (raceTimer != null && raceTimer.isRunning()) {
+            return;
+        }
+
+        raceTurnCount = 0;
+        raceStatusLabel.setText("Race in progress...");
+        startRaceButton.setEnabled(false);
+        resetRaceButton.setEnabled(false);
+
+        raceTimer = new Timer(200, e -> advanceGuiRace());
+        raceTimer.start();
+    }
+
+    private void advanceGuiRace() {
+        raceTurnCount++;
+
+        for (int i = 0; i < raceTypists.size(); i++) {
+            advanceGuiTypist(raceTypists.get(i));
+        }
+
+        refreshRaceDisplay();
+
+        Typist winner = getWinner();
+        if (winner != null) {
+            stopRaceTimer();
+            winner.setAccuracy(currentGameSpecs.roundAccuracy(winner.getAccuracy() + currentGameSpecs.getWinnerAccuracyIncrease()));
+            raceSummaryArea.setText(buildRaceSummary());
+            refreshRaceDisplay();
+            raceStatusLabel.setText("And the winner is... " + winner.getName() + "!");
+            JOptionPane.showMessageDialog(this,
+                "And the winner is... " + winner.getName() + "!\nFinal accuracy: " + currentGameSpecs.roundAccuracy(winner.getAccuracy()));
+            startRaceButton.setEnabled(false);
+            resetRaceButton.setEnabled(true);
+        }
+    }
+
+    private void advanceGuiTypist(Typist typist) {
+        if (typist.isBurntOut()) {
+            typist.recoverFromBurnout();
+            return;
+        }
+
+        if (determineBurnout(typist)) {
+            typist.burnOut(currentGameSpecs.getBurnoutDuration());
+            typist.setMistype(false);
+            typist.resetMistypeCounter();
+            typist.setAccuracy(roundTo3dp(typist.getAccuracy() - currentGameSpecs.getBurnoutAccuracyDecrease()));
+        }
+        else if (determineMistype(typist)) {
+            int slideBackAmount = currentGameSpecs.isAutocorrect() ? 1 : currentGameSpecs.getSlideBackAmount();
+            typist.slideBack(slideBackAmount);
+            typist.setMistype(true);
+            typist.plusMistypeCounter();
+        }
+        else {
+            typist.typeCharacter();
+            if (currentGameSpecs.isCaffieneMode() && raceTurnCount <= 10) {
+                typist.typeCharacter();
+            }
+            typist.setMistype(false);
+            typist.resetMistypeCounter();
+        }
+    }
+
+    private boolean determineBurnout(Typist typist) {
+        double burnoutChance = currentGameSpecs.getBurnoutBaseChance() * typist.getAccuracy() * typist.getAccuracy();
+        if (currentGameSpecs.isCaffieneMode() && raceTurnCount <= 10) {
+            burnoutChance += 0.20;
+        }
+        return Math.random() < burnoutChance;
+    }
+
+    private boolean determineMistype(Typist typist) {
+        return Math.random() < (1 - typist.getAccuracy()) * currentGameSpecs.getMistypeBaseChance();
+    }
+
+    private Typist getWinner() {
+        for (Typist typist : raceTypists) {
+            if (typist.getProgress() >= currentGameSpecs.getPassageLength()) {
+                return typist;
+            }
+        }
+        return null;
+    }
+
+    private void refreshRaceDisplay() {
+        for (int i = 0; i < raceLaneViews.size(); i++) {
+            if (i < raceTypists.size()) {
+                Typist typist = raceTypists.get(i);
+                raceLaneViews.get(i).setLaneText(buildLaneText(typist));
+                raceLaneViews.get(i).setStatusText(buildStatusText(typist));
+            }
+        }
+    }
+
+    private String buildStatusText(Typist typist) {
+        if (typist.isBurntOut()) {
+            return "Burnt out (" + typist.getBurnoutTurnsRemaining() + " turns left)";
+        }
+        if (typist.isMistype()) {
+            return "Just mistyped";
+        }
+        if (typist.getProgress() >= currentGameSpecs.getPassageLength()) {
+            return "Finished";
+        }
+        return "Racing";
+    }
+
+    private String buildLaneText(Typist typist) {
+        int passageLength = currentGameSpecs.getPassageLength();
+        int progress = Math.min(typist.getProgress(), passageLength);
+        StringBuilder lane = new StringBuilder();
+        lane.append('|');
+        for (int i = 0; i < progress; i++) {
+            lane.append(' ');
+        }
+        lane.append(typist.getSymbol());
+        if (typist.isBurntOut()) {
+            lane.append('~');
+        }
+        else if (typist.isMistype()) {
+            lane.append('<');
+        }
+        for (int i = progress + 1; i < passageLength; i++) {
+            lane.append(' ');
+        }
+        lane.append('|');
+        return lane.toString();
+    }
+
+    private Typist createTypistForSeat(int seatIndex) {
+        int presetIndex = currentGameSpecs.getTypist(seatIndex);
+        double accuracy = currentGameSpecs.getPresetAccuracy(presetIndex);
+        if (currentGameSpecs.isNightShift()) {
+            accuracy = roundTo3dp(accuracy * 0.67);
+        }
+
+        Typist typist = new Typist(
+            currentGameSpecs.getCharacterSymbol(seatIndex),
+            currentGameSpecs.getCharacterName(seatIndex),
+            accuracy
+        );
+        typist.resetToStart();
+        typist.resetMistypeCounter();
+        typist.setMistype(false);
+        return typist;
+    }
+
+    private String buildRaceSummary() {
+        StringBuilder summary = new StringBuilder();
+        summary.append("Passage length: ").append(currentGameSpecs.getPassageLength()).append("\n");
+        summary.append("Modifiers: ");
+        summary.append(currentGameSpecs.isAutocorrect() ? "Autocorrect on" : "Autocorrect off");
+        summary.append(", ");
+        summary.append(currentGameSpecs.isCaffieneMode() ? "Caffiene mode on" : "Caffiene mode off");
+        summary.append(", ");
+        summary.append(currentGameSpecs.isNightShift() ? "Night shift on" : "Night shift off");
+        summary.append("\n\nPlayers:\n");
+
+        for (int i = 0; i < raceTypists.size(); i++) {
+            Typist typist = raceTypists.get(i);
+            summary.append(i + 1)
+                .append(". ")
+                .append(typist.getName())
+                .append(" (")
+                .append(typist.getSymbol())
+                .append(") - accuracy ")
+                .append(currentGameSpecs.roundAccuracy(typist.getAccuracy()))
+                .append("\n");
+        }
+
+        return summary.toString();
+    }
+
+    private void stopRaceTimer() {
+        if (raceTimer != null) {
+            raceTimer.stop();
+        }
+    }
+
+    private double roundTo3dp(double number) {
+        return (double)Math.round(number * 1000) / 1000;
+    }
+
+    private static class RaceLaneView {
+        private final JPanel panel;
+        private final JLabel titleLabel;
+        private final JTextArea laneText;
+        private final JLabel statusLabel;
+
+        RaceLaneView(int laneNumber) {
+            panel = new JPanel(new BorderLayout(10, 5));
+            panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+
+            titleLabel = new JLabel("Player " + (laneNumber + 1));
+            laneText = new JTextArea(1, 50);
+            laneText.setEditable(false);
+            laneText.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+            laneText.setBackground(UIManager.getColor("Panel.background"));
+            laneText.setBorder(BorderFactory.createEmptyBorder());
+            statusLabel = new JLabel("");
+
+            panel.add(titleLabel, BorderLayout.WEST);
+            panel.add(laneText, BorderLayout.CENTER);
+            panel.add(statusLabel, BorderLayout.EAST);
+            panel.setVisible(false);
+        }
+
+        void setVisible(boolean visible) {
+            panel.setVisible(visible);
+        }
+
+        void setTypistLabel(Typist typist) {
+            titleLabel.setText(typist.getName() + " (" + typist.getSymbol() + ")");
+        }
+
+        void setLaneText(String text) {
+            laneText.setText(text);
+        }
+
+        void setStatusText(String text) {
+            statusLabel.setText(text);
+        }
+
+        void clear() {
+            titleLabel.setText("");
+            laneText.setText("");
+            statusLabel.setText("");
+            panel.setVisible(false);
+        }
+    }
+
+    private void bridge () {
+        typeRace.setGuiModeTrue();
+        
     }
 }
