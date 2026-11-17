@@ -69,7 +69,7 @@ javac Part1/*.java Part2/*.java
 
 Run:
 ```bash
-java part2.TypingRaceGUI.java
+java part2.TypingRaceGUI
 ```
 
 ## Dependencies
